@@ -1,7 +1,8 @@
 """Module contains the async interface to match needle against haystack in batch."""
 import asyncio
 import heapq
-from typing import Any, Callable, Dict, List, Union, cast
+from collections.abc import Callable
+from typing import Any, cast
 
 from InquirerPy._pfzy.score import SCORE_INDICES, fzy_scorer
 from InquirerPy._pfzy.types import HAYSTACKS
@@ -10,9 +11,9 @@ from InquirerPy._pfzy.types import HAYSTACKS
 async def _rank_task(
     scorer: Callable[[str, str], SCORE_INDICES],
     needle: str,
-    haystacks: List[Union[str, Dict[str, Any]]],
+    haystacks: list[str | dict[str, Any]],
     key: str,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """Calculate the score for needle against given list of haystacks and rank them.
 
     Args:
@@ -27,7 +28,7 @@ async def _rank_task(
     """
     result = []
     for haystack in haystacks:
-        score, indices = scorer(needle, cast(Dict, haystack)[key])
+        score, indices = scorer(needle, cast(dict, haystack)[key])
         if indices is None:
             continue
         result.append(
@@ -46,8 +47,8 @@ async def fuzzy_match(
     haystacks: HAYSTACKS,
     key: str = "",
     batch_size: int = 4096,
-    scorer: Callable[[str, str], SCORE_INDICES] = None,
-) -> List[Dict[str, Any]]:
+    scorer: Callable[[str, str], SCORE_INDICES] | None = None,
+) -> list[dict[str, Any]]:
     """Fuzzy find the needle within list of haystacks and get matched results with matching index.
 
     Note:
@@ -64,7 +65,7 @@ async def fuzzy_match(
         key: If `haystacks` is a list of dictionary, provide the key that
             can obtain the haystack value to search.
         batch_size: Number of entry to be processed together.
-        scorer (Callable[[str, str], SCORE_indices]): Desired scorer to use. Currently only :func:`~pfzy.score.fzy_scorer` and :func:`~pfzy.score.substr_scorer` is supported.
+        scorer: Desired scorer to use. Currently only :func:`~pfzy.score.fzy_scorer` and :func:`~pfzy.score.substr_scorer` is supported.
 
     Raises:
         TypeError: When the argument `haystacks` is :class:`list` of :class:`dict` and the `key` argument
@@ -89,7 +90,7 @@ async def fuzzy_match(
 
     if not key:
         raise TypeError(
-            f"${fuzzy_match.__name__} missing 1 required argument: 'key', 'key' is required when haystacks is an instance of dict"
+            f"{fuzzy_match.__name__} missing 1 required argument: 'key', 'key' is required when haystacks is an instance of dict"
         )
 
     batches = await asyncio.gather(

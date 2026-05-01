@@ -51,15 +51,14 @@ class InquirerPyStyle(NamedTuple):
 
 
 InquirerPySessionResult = dict[str | int, str | bool | list[Any] | None]
-InquirerPyChoice = Union[list[Any], list["Choice"], list[dict[str, Any]]]
-InquirerPyListChoices = Union[
-    Callable[["InquirerPySessionResult"], InquirerPyChoice],
-    InquirerPyChoice,
-]
-InquirerPyValidate = Union[Callable[[Any], bool], "Validator"]
+InquirerPyChoice = list[Any] | list["Choice"] | list[dict[str, Any]]
+InquirerPyListChoices = (
+    Callable[["InquirerPySessionResult"], InquirerPyChoice] | InquirerPyChoice
+)
+InquirerPyValidate = Callable[[Any], bool] | "Validator"
 InquirerPyQuestions = list[dict[str, Any]] | dict[str, Any]
 InquirerPyMessage = str | Callable[["InquirerPySessionResult"], str]
-InquirerPyDefault = Any | Callable[["InquirerPySessionResult"], Any]
+InquirerPyDefault = Any
 InquirerPyKeybindings = dict[
     str, list[dict[str, Union[str, "FilterOrBool", list[str]]]]
 ]

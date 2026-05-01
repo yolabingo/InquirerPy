@@ -1,5 +1,5 @@
 """Module contains typing aliases."""
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
-SCORE_INDICES = Tuple[float, Optional[List[int]]]
-HAYSTACKS = List[Union[str, Dict[str, Any]]]
+SCORE_INDICES = tuple[float, list[int] | None]
+HAYSTACKS = list[str | dict[str, Any]]

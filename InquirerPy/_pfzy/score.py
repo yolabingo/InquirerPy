@@ -1,6 +1,6 @@
 """Module contains the score calculation algorithems."""
 from functools import partial
-from typing import Dict, List, Union, cast
+from typing import cast
 
 from InquirerPy._pfzy.types import SCORE_INDICES
 
@@ -13,8 +13,8 @@ SCORE_MATCH_CONSECUTIVE = 1.0
 
 
 def _char_range_with(
-    char_start: str, char_stop: str, value, hash_table: Dict[str, Union[int, float]]
-) -> Dict[str, Union[int, float]]:
+    char_start: str, char_stop: str, value, hash_table: dict[str, int | float]
+) -> dict[str, int | float]:
     """Generate index mapping for `bonus` calculation.
 
     Args:
@@ -54,10 +54,10 @@ BONUS_MAP = {
     ".": SCORE_MATCH_DOT,
 }
 BONUS_STATES = [{}, BONUS_MAP, lower_with(SCORE_MATCH_CAPITAL, BONUS_MAP)]
-BONUS_INDEX = cast(Dict[str, int], digit_with(1, lower_with(1, upper_with(2, {}))))
+BONUS_INDEX = cast(dict[str, int], digit_with(1, lower_with(1, upper_with(2, {}))))
 
 
-def _bonus(haystack: str) -> List[float]:
+def _bonus(haystack: str) -> list[float]:
     """Calculate bonus score for the given haystack.
 
     The bonus are applied to each char based on the previous char.
@@ -127,12 +127,12 @@ def _score(needle: str, haystack: str) -> SCORE_INDICES:
         return SCORE_MAX, list(range(needle_len))
 
     # best score for the position
-    running_score: List[List[float]] = [
+    running_score: list[list[float]] = [
         [0 for _ in range(haystack_len)] for _ in range(needle_len)
     ]
 
     # overall best score at each position
-    result_score: List[List[float]] = [
+    result_score: list[list[float]] = [
         [0 for _ in range(haystack_len)] for _ in range(needle_len)
     ]
 
