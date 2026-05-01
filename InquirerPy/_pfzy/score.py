@@ -1,4 +1,5 @@
 """Module contains the score calculation algorithems."""
+
 from functools import partial
 from typing import cast
 
@@ -31,10 +32,7 @@ def _char_range_with(
         {'a': 1, 'b': 1, 'c': 1, 'd': 1}
     """
     hash_table = hash_table.copy()
-    hash_table.update(
-        (chr(uni_char), value)
-        for uni_char in range(ord(char_start), ord(char_stop) + 1)
-    )
+    hash_table.update((chr(uni_char), value) for uni_char in range(ord(char_start), ord(char_stop) + 1))
     return hash_table
 
 
@@ -127,14 +125,10 @@ def _score(needle: str, haystack: str) -> SCORE_INDICES:
         return SCORE_MAX, list(range(needle_len))
 
     # best score for the position
-    running_score: list[list[float]] = [
-        [0 for _ in range(haystack_len)] for _ in range(needle_len)
-    ]
+    running_score: list[list[float]] = [[0 for _ in range(haystack_len)] for _ in range(needle_len)]
 
     # overall best score at each position
-    result_score: list[list[float]] = [
-        [0 for _ in range(haystack_len)] for _ in range(needle_len)
-    ]
+    result_score: list[list[float]] = [[0 for _ in range(haystack_len)] for _ in range(needle_len)]
 
     for i in range(needle_len):
         prev_score = SCORE_MIN
@@ -175,14 +169,9 @@ def _score(needle: str, haystack: str) -> SCORE_INDICES:
             # e.g. haystack, needle = "auibywcabc", "abc"
             # using match_required: [7, 8, 9]
             # without match_required: [0, 8, 9]
-            if (
-                match_required or running_score[i][j] == result_score[i][j]
-            ) and running_score[i][j] != SCORE_MIN:
+            if (match_required or running_score[i][j] == result_score[i][j]) and running_score[i][j] != SCORE_MIN:
                 match_required = (
-                    i > 0
-                    and j > 0
-                    and result_score[i][j]
-                    == running_score[i - 1][j - 1] + SCORE_MATCH_CONSECUTIVE
+                    i > 0 and j > 0 and result_score[i][j] == running_score[i - 1][j - 1] + SCORE_MATCH_CONSECUTIVE
                 )
                 indices[i] = j
                 j -= 1

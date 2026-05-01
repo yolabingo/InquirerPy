@@ -1,4 +1,5 @@
 """Module contains pre-built validators."""
+
 import re
 from pathlib import Path
 
@@ -20,9 +21,7 @@ class NumberValidator(Validator):
         float_allowed: Allow input to contain floating number (with decimal).
     """
 
-    def __init__(
-        self, message: str = "Input should be a number", float_allowed: bool = False
-    ) -> None:
+    def __init__(self, message: str = "Input should be a number", float_allowed: bool = False) -> None:
         self._message = message
         self._float_allowed = float_allowed
 
@@ -40,9 +39,7 @@ class NumberValidator(Validator):
             else:
                 int(document.text)
         except ValueError:
-            raise ValidationError(
-                message=self._message, cursor_position=document.cursor_position
-            )
+            raise ValidationError(message=self._message, cursor_position=document.cursor_position)
 
 
 class PathValidator(Validator):
@@ -159,6 +156,4 @@ class PasswordValidator(Validator):
             https://python-prompt-toolkit.readthedocs.io/en/master/pages/asking_for_input.html?highlight=validator#input-validation
         """
         if not self._re.match(document.text):
-            raise ValidationError(
-                message=self._message, cursor_position=document.cursor_position
-            )
+            raise ValidationError(message=self._message, cursor_position=document.cursor_position)

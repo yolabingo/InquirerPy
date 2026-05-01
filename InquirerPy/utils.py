@@ -1,4 +1,5 @@
 """Module contains shared utility functions and typing aliases."""
+
 import math
 import os
 import shutil
@@ -51,22 +52,19 @@ class InquirerPyStyle(NamedTuple):
 
 
 InquirerPySessionResult = dict[str | int, str | bool | list[Any] | None]
-InquirerPyChoice = list[Any] | list["Choice"] | list[dict[str, Any]]
-InquirerPyListChoices = (
-    Callable[["InquirerPySessionResult"], InquirerPyChoice] | InquirerPyChoice
-)
-InquirerPyValidate = Callable[[Any], bool] | "Validator"
+InquirerPyChoice = Union[list[Any], list["Choice"], list[dict[str, Any]]]
+InquirerPyListChoices = Union[
+    Callable[["InquirerPySessionResult"], InquirerPyChoice],
+    InquirerPyChoice,
+]
+InquirerPyValidate = Union[Callable[[Any], bool], "Validator"]
 InquirerPyQuestions = list[dict[str, Any]] | dict[str, Any]
 InquirerPyMessage = str | Callable[["InquirerPySessionResult"], str]
 InquirerPyDefault = Any
-InquirerPyKeybindings = dict[
-    str, list[dict[str, Union[str, "FilterOrBool", list[str]]]]
-]
+InquirerPyKeybindings = dict[str, list[dict[str, Union[str, "FilterOrBool", list[str]]]]]
 
 
-def get_style(
-    style: dict[str, str] | None = None, style_override: bool = True
-) -> InquirerPyStyle:
+def get_style(style: dict[str, str] | None = None, style_override: bool = True) -> InquirerPyStyle:
     """Obtain an :class:`.InquirerPyStyle` instance which can be consumed by the `style` parameter in prompts.
 
     Tip:
@@ -106,9 +104,7 @@ def get_style(
             "question": os.getenv("INQUIRERPY_STYLE_QUESTION", ""),
             "answered_question": os.getenv("INQUIRERPY_STYLE_ANSWERED_QUESTION", ""),
             "instruction": os.getenv("INQUIRERPY_STYLE_INSTRUCTION", "#abb2bf"),
-            "long_instruction": os.getenv(
-                "INQUIRERPY_STYLE_LONG_INSTRUCTION", "#abb2bf"
-            ),
+            "long_instruction": os.getenv("INQUIRERPY_STYLE_LONG_INSTRUCTION", "#abb2bf"),
             "pointer": os.getenv("INQUIRERPY_STYLE_POINTER", "#61afef"),
             "checkbox": os.getenv("INQUIRERPY_STYLE_CHECKBOX", "#98c379"),
             "separator": os.getenv("INQUIRERPY_STYLE_SEPARATOR", ""),
@@ -205,9 +201,7 @@ def calculate_height(
             if isinstance(height, str):
                 height = height.replace("%", "")
                 height = int(height)
-                dimmension_height = (
-                    math.floor(term_lines * (height / 100)) - height_offset
-                )
+                dimmension_height = math.floor(term_lines * (height / 100)) - height_offset
             else:
                 dimmension_height = height
 
@@ -216,9 +210,7 @@ def calculate_height(
         if isinstance(max_height, str):
             max_height = max_height.replace("%", "")
             max_height = int(max_height)
-            dimmension_max_height = (
-                math.floor(term_lines * (max_height / 100)) - height_offset
-            )
+            dimmension_max_height = math.floor(term_lines * (max_height / 100)) - height_offset
         else:
             dimmension_max_height = max_height
 
@@ -231,9 +223,7 @@ def calculate_height(
         return dimmension_height, dimmension_max_height
 
     except ValueError:
-        raise InvalidArgument(
-            "prompt argument height/max_height needs to be type of an int or str"
-        )
+        raise InvalidArgument("prompt argument height/max_height needs to be type of an int or str")
 
 
 def patched_print(*values) -> None:
@@ -256,9 +246,7 @@ def patched_print(*values) -> None:
     run_in_terminal(_print)
 
 
-def color_print(
-    formatted_text: list[tuple[str, str]], style: dict[str, str] | None = None
-) -> None:
+def color_print(formatted_text: list[tuple[str, str]], style: dict[str, str] | None = None) -> None:
     """Print colored text leveraging :func:`~prompt_toolkit.shortcuts.print_formatted_text`.
 
     This function automatically handles printing the text without interrupting the

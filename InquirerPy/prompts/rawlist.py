@@ -1,4 +1,5 @@
 """Module contains the class to create a rawlist prompt."""
+
 from typing import Any, Callable
 
 from InquirerPy.base import InquirerPyUIListControl
@@ -58,9 +59,7 @@ class InquirerPyRawlistControl(InquirerPyUIListControl):
 
         if self.choices:
             first_valid_choice_index = 0
-            while isinstance(
-                self.choices[first_valid_choice_index]["value"], Separator
-            ):
+            while isinstance(self.choices[first_valid_choice_index]["value"], Separator):
                 first_valid_choice_index += 1
             if self.selected_choice_index == first_valid_choice_index:
                 for choice in self.choices:
@@ -100,9 +99,7 @@ class InquirerPyRawlistControl(InquirerPyUIListControl):
             )
         )
         if not isinstance(choice["value"], Separator):
-            display_choices.append(
-                ("", "%s%s" % (str(choice["display_index"]), self._separator))
-            )
+            display_choices.append(("", "%s%s" % (str(choice["display_index"]), self._separator)))
             display_choices.append(("", choice["name"]))
         else:
             display_choices.append(("class:separator", choice["name"]))
@@ -279,7 +276,5 @@ class RawlistPrompt(ListPrompt):
         """
         display_message = super()._get_prompt_message()
         if not self.status["answered"] and self.content_control.choices:
-            display_message.append(
-                ("class:input", str(self.content_control.selection["display_index"]))
-            )
+            display_message.append(("class:input", str(self.content_control.selection["display_index"])))
         return display_message

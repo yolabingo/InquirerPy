@@ -1,4 +1,5 @@
 """Module contains the class to create a fuzzy prompt."""
+
 import asyncio
 import math
 from typing import (
@@ -8,9 +9,6 @@ from typing import (
     cast,
 )
 
-from InquirerPy._pfzy import fuzzy_match
-from InquirerPy._pfzy.score import fzy_scorer, substr_scorer
-from InquirerPy._pfzy.types import HAYSTACKS
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.filters.cli import IsDone
@@ -28,6 +26,9 @@ from prompt_toolkit.lexers.base import SimpleLexer
 from prompt_toolkit.validation import ValidationError
 from prompt_toolkit.widgets.base import Frame
 
+from InquirerPy._pfzy import fuzzy_match
+from InquirerPy._pfzy.score import fzy_scorer, substr_scorer
+from InquirerPy._pfzy.types import HAYSTACKS
 from InquirerPy.base import FakeDocument, InquirerPyUIListControl
 from InquirerPy.base.list import BaseListPrompt
 from InquirerPy.containers.instruction import InstructionWindow
@@ -90,9 +91,7 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
     def _format_choices(self) -> None:
         for index, choice in enumerate(self.choices):
             if isinstance(choice["value"], Separator):
-                raise InvalidArgument(
-                    "fuzzy prompt argument choices should not contain Separator"
-                )
+                raise InvalidArgument("fuzzy prompt argument choices should not contain Separator")
             choice["index"] = index
             choice["indices"] = []
         self._filtered_choices = self.choices
@@ -114,9 +113,7 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
         display_choices.append(
             (
                 "class:marker",
-                self._marker
-                if self.choices[choice["index"]]["enabled"]
-                else self._marker_pl,
+                self._marker if self.choices[choice["index"]]["enabled"] else self._marker_pl,
             )
         )
         display_choices.append(("[SetCursorPosition]", ""))
@@ -147,9 +144,7 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
         display_choices.append(
             (
                 "class:marker",
-                self._marker
-                if self.choices[choice["index"]]["enabled"]
-                else self._marker_pl,
+                self._marker if self.choices[choice["index"]]["enabled"] else self._marker_pl,
             )
         )
         if not choice["indices"]:
@@ -395,11 +390,7 @@ class FuzzyPrompt(BaseListPrompt):
             session_result=session_result,
         )
         self.kb_func_lookup = {"toggle-exact": [{"func": self._toggle_exact}]}
-        self._default = (
-            default
-            if not isinstance(default, Callable)
-            else cast(Callable, default)(self._result)
-        )
+        self._default = default if not isinstance(default, Callable) else cast(Callable, default)(self._result)
         self._height_offset += 1  # search input
         self._dimmension_height, self._dimmension_max_height = calculate_height(
             height, max_height, height_offset=self.height_offset
@@ -502,9 +493,7 @@ class FuzzyPrompt(BaseListPrompt):
             self.content_control._scorer = fzy_scorer if not value else substr_scorer
         else:
             self.content_control._scorer = (
-                fzy_scorer
-                if self.content_control._scorer == substr_scorer
-                else substr_scorer
+                fzy_scorer if self.content_control._scorer == substr_scorer else substr_scorer
             )
 
     def _on_rendered(self, _) -> None:
@@ -544,9 +533,7 @@ class FuzzyPrompt(BaseListPrompt):
                 )
             )
             if self._multiselect:
-                display_message.append(
-                    ("class:fuzzy_info", f" ({len(self.selected_choices)})")
-                )
+                display_message.append(("class:fuzzy_info", f" ({len(self.selected_choices)})"))
             if self.content_control._scorer == substr_scorer:
                 display_message.append(("class:fuzzy_info", self._exact_symbol))
         return display_message
@@ -612,9 +599,7 @@ class FuzzyPrompt(BaseListPrompt):
         wait_time = self._calculate_wait_time()
         if self._task and not self._task.done():
             self._task.cancel()
-        self._task = asyncio.create_task(
-            self.content_control._filter_choices(wait_time)
-        )
+        self._task = asyncio.create_task(self.content_control._filter_choices(wait_time))
         self._task.add_done_callback(self._filter_callback)
 
     def _handle_toggle_choice(self, _) -> None:
@@ -624,9 +609,9 @@ class FuzzyPrompt(BaseListPrompt):
         if self.content_control.choice_count == 0:
             return
         current_selected_index = self.content_control.selection["index"]
-        self.content_control.choices[current_selected_index][
-            "enabled"
-        ] = not self.content_control.choices[current_selected_index]["enabled"]
+        self.content_control.choices[current_selected_index]["enabled"] = not self.content_control.choices[
+            current_selected_index
+        ]["enabled"]
 
     def _handle_enter(self, event: "KeyPressEvent") -> None:
         """Handle enter event.

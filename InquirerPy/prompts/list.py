@@ -1,4 +1,5 @@
 """Module contains the class to create a list prompt."""
+
 import shutil
 from typing import TYPE_CHECKING, Any, Callable
 
@@ -244,9 +245,7 @@ class ListPrompt(BaseListPrompt):
             content=HSplit(
                 [
                     MessageWindow(
-                        message=self._get_prompt_message_with_cursor
-                        if self._show_cursor
-                        else self._get_prompt_message,
+                        message=self._get_prompt_message_with_cursor if self._show_cursor else self._get_prompt_message,
                         filter=True,
                         wrap_lines=self._wrap_lines,
                         show_cursor=self._show_cursor,
@@ -295,9 +294,7 @@ class ListPrompt(BaseListPrompt):
         """Toggle the `enabled` status of the choice."""
         if not self._multiselect:
             return
-        self.content_control.selection["enabled"] = not self.content_control.selection[
-            "enabled"
-        ]
+        self.content_control.selection["enabled"] = not self.content_control.selection["enabled"]
 
     def _handle_toggle_all(self, _, value: bool | None = None) -> None:
         """Toggle all choice `enabled` status.

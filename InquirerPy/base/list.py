@@ -1,4 +1,5 @@
 """Contains the base class :class:`.BaseListPrompt` which can be used to create a prompt involving choices."""
+
 from abc import abstractmethod
 from typing import Any, Callable
 
@@ -201,13 +202,8 @@ class BaseListPrompt(BaseComplexPrompt):
             return False
         else:
             self.content_control.selected_choice_index += 1
-            if (
-                self.content_control.selected_choice_index
-                >= self.content_control.choice_count
-            ):
-                self.content_control.selected_choice_index = (
-                    self.content_control.choice_count - 1
-                )
+            if self.content_control.selected_choice_index >= self.content_control.choice_count:
+                self.content_control.selected_choice_index = self.content_control.choice_count - 1
                 return True
             return False
 

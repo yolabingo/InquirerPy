@@ -1,4 +1,5 @@
 """Module contains the async interface to match needle against haystack in batch."""
+
 import asyncio
 import heapq
 from collections.abc import Callable

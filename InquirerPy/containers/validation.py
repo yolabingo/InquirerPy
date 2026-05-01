@@ -1,6 +1,5 @@
 """Module contains :class:`.ValidationWindow` which can be used to display error."""
 
-
 from prompt_toolkit.filters.base import FilterOrBool
 from prompt_toolkit.formatted_text.base import AnyFormattedText
 from prompt_toolkit.layout.containers import ConditionalContainer, Float, Window
@@ -15,13 +14,9 @@ class ValidationWindow(ConditionalContainer):
         filter: Condition to display the error window.
     """
 
-    def __init__(
-        self, invalid_message: AnyFormattedText, filter: FilterOrBool, **kwargs
-    ) -> None:
+    def __init__(self, invalid_message: AnyFormattedText, filter: FilterOrBool, **kwargs) -> None:
         super().__init__(
-            Window(
-                FormattedTextControl(invalid_message), dont_extend_height=True, **kwargs
-            ),
+            Window(FormattedTextControl(invalid_message), dont_extend_height=True, **kwargs),
             filter=filter,
         )
 
@@ -46,12 +41,10 @@ class ValidationFloat(Float):
         right: int | None = None,
         bottom: int | None = None,
         top: int | None = None,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(
-            content=ValidationWindow(
-                invalid_message=invalid_message, filter=filter, **kwargs
-            ),
+            content=ValidationWindow(invalid_message=invalid_message, filter=filter, **kwargs),
             left=left,
             right=right,
             bottom=bottom,

@@ -2,6 +2,7 @@
 
 A `PyInquirer <https://github.com/CITGuru/PyInquirer>`_ compatible entrypoint :func:`.prompt`.
 """
+
 from typing import Any
 
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
@@ -115,9 +116,7 @@ async def prompt_async(
                 "session_result": result,
                 "keybindings": {**keybindings, **question.pop("keybindings", {})},
             }
-            result[question_name] = await question_mapping[question_type](
-                **args, **question
-            ).execute_async()
+            result[question_name] = await question_mapping[question_type](**args, **question).execute_async()
         except KeyError:
             raise RequiredKeyNotFound
 
@@ -210,9 +209,7 @@ def prompt(
                 "session_result": result,
                 "keybindings": {**keybindings, **question.pop("keybindings", {})},
             }
-            result[question_name] = question_mapping[question_type](
-                **args, **question
-            ).execute()
+            result[question_name] = question_mapping[question_type](**args, **question).execute()
         except KeyError:
             raise RequiredKeyNotFound
 

@@ -1,4 +1,5 @@
 """Contains the interface class :class:`.BaseComplexPrompt` for more complex prompts and the mocked document class :class:`.FakeDocument`."""
+
 import shutil
 from dataclasses import dataclass
 from typing import Any, Callable
@@ -101,15 +102,11 @@ class BaseComplexPrompt(BaseSimplePrompt):
             self._height_offset += 1
         self._validation_window_bottom_offset = 0 if not self._long_instruction else 1
         if self._wrap_lines:
-            self._validation_window_bottom_offset += (
-                self.extra_long_instruction_line_count
-            )
+            self._validation_window_bottom_offset += self.extra_long_instruction_line_count
 
         self._is_vim_edit = Condition(lambda: self._editing_mode == EditingMode.VI)
         self._is_invalid = Condition(lambda: self._invalid)
-        self._is_displaying_long_instruction = Condition(
-            lambda: self._long_instruction != ""
-        )
+        self._is_displaying_long_instruction = Condition(lambda: self._long_instruction != "")
 
     def _redraw(self) -> None:
         """Redraw the application UI."""

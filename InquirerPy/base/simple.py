@@ -1,4 +1,5 @@
 """Contains the base class :class:`.BaseSimplePrompt`."""
+
 import os
 import re
 from abc import ABC, abstractmethod
@@ -67,15 +68,9 @@ class BaseSimplePrompt(ABC):
         self._mandatory = mandatory
         self._mandatory_message = mandatory_message
         self._result = session_result or {}
-        self._message = (
-            message
-            if not isinstance(message, Callable)
-            else cast(Callable, message)(self._result)
-        )
+        self._message = message if not isinstance(message, Callable) else cast(Callable, message)(self._result)
         self._instruction = instruction
-        self._default = (
-            default if not isinstance(default, Callable) else default(self._result)
-        )
+        self._default = default if not isinstance(default, Callable) else default(self._result)
         self._style = Style.from_dict(style.dict if style else get_style().dict)
         self._qmark = qmark
         self._amark = amark
@@ -86,9 +81,7 @@ class BaseSimplePrompt(ABC):
         self._filter = filter
         self._wrap_lines = wrap_lines
         self._editing_mode = (
-            EditingMode.VI
-            if vi_mode or bool(os.getenv("INQUIRERPY_VI_MODE", False))
-            else EditingMode.EMACS
+            EditingMode.VI if vi_mode or bool(os.getenv("INQUIRERPY_VI_MODE", False)) else EditingMode.EMACS
         )
         if isinstance(validate, Validator):
             self._validator = validate
@@ -98,9 +91,7 @@ class BaseSimplePrompt(ABC):
                 invalid_message,
                 move_cursor_to_end=True,
             )
-        self._raise_kbi = not os.getenv(
-            "INQUIRERPY_NO_RAISE_KBI", not raise_keyboard_interrupt
-        )
+        self._raise_kbi = not os.getenv("INQUIRERPY_NO_RAISE_KBI", not raise_keyboard_interrupt)
         self._is_rasing_kbi = Condition(lambda: self._raise_kbi)
 
         self._kb_maps = {
@@ -239,9 +230,7 @@ class BaseSimplePrompt(ABC):
         return decorator
 
     @abstractmethod
-    def _get_prompt_message(
-        self, pre_answer: tuple[str, str], post_answer: tuple[str, str]
-    ) -> list[tuple[str, str]]:
+    def _get_prompt_message(self, pre_answer: tuple[str, str], post_answer: tuple[str, str]) -> list[tuple[str, str]]:
         """Get the question message in formatted text form to display in the prompt.
 
         This function is mainly used to render the question message dynamically based
@@ -262,9 +251,7 @@ class BaseSimplePrompt(ABC):
         display_message = []
         if self.status["skipped"]:
             display_message.append(("class:skipped", self._qmark))
-            display_message.append(
-                ("class:skipped", "%s%s " % (" " if self._qmark else "", self._message))
-            )
+            display_message.append(("class:skipped", "%s%s " % (" " if self._qmark else "", self._message)))
         elif self.status["answered"]:
             display_message.append(("class:answermark", self._amark))
             display_message.append(
@@ -324,9 +311,7 @@ class BaseSimplePrompt(ABC):
         """
         result = self._run()
         if raise_keyboard_interrupt is not None:
-            self._raise_kbi = not os.getenv(
-                "INQUIRERPY_NO_RAISE_KBI", not raise_keyboard_interrupt
-            )
+            self._raise_kbi = not os.getenv("INQUIRERPY_NO_RAISE_KBI", not raise_keyboard_interrupt)
         if result == INQUIRERPY_KEYBOARD_INTERRUPT:
             raise KeyboardInterrupt
         if not self._filter:

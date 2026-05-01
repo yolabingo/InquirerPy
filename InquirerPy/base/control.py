@@ -1,4 +1,5 @@
 """Contains the content control class :class:`.InquirerPyUIListControl`."""
+
 from abc import abstractmethod
 from dataclasses import asdict, dataclass
 from typing import Any, Callable, cast
@@ -59,15 +60,9 @@ class InquirerPyUIListControl(FormattedTextControl):
         self._selected_choice_index: int = 0
         self._choice_func = None
         self._multiselect = multiselect
-        self._default = (
-            default
-            if not isinstance(default, Callable)
-            else cast(Callable, default)(self._session_result)
-        )
+        self._default = default if not isinstance(default, Callable) else cast(Callable, default)(self._session_result)
         self._raw_choices = (
-            choices
-            if not isinstance(choices, Callable)
-            else cast(Callable, choices)(self._session_result)
+            choices if not isinstance(choices, Callable) else cast(Callable, choices)(self._session_result)
         )
         self._choices = self._get_choices(self._raw_choices, self._default)
         self._safety_check()
@@ -97,19 +92,13 @@ class InquirerPyUIListControl(FormattedTextControl):
                         {
                             "name": str(choice["name"]),
                             "value": choice["value"],
-                            "enabled": choice.get("enabled", False)
-                            if self._multiselect
-                            else False,
+                            "enabled": choice.get("enabled", False) if self._multiselect else False,
                         }
                     )
                 elif isinstance(choice, Separator):
                     if self.selected_choice_index == index:
-                        self.selected_choice_index = (
-                            self.selected_choice_index + 1
-                        ) % len(choices)
-                    processed_choices.append(
-                        {"name": str(choice), "value": choice, "enabled": False}
-                    )
+                        self.selected_choice_index = (self.selected_choice_index + 1) % len(choices)
+                    processed_choices.append({"name": str(choice), "value": choice, "enabled": False})
                 elif isinstance(choice, Choice):
                     dict_choice = asdict(choice)
                     if dict_choice["value"] == default:
@@ -120,13 +109,9 @@ class InquirerPyUIListControl(FormattedTextControl):
                 else:
                     if choice == default:
                         self.selected_choice_index = index
-                    processed_choices.append(
-                        {"name": str(choice), "value": choice, "enabled": False}
-                    )
+                    processed_choices.append({"name": str(choice), "value": choice, "enabled": False})
         except KeyError:
-            raise RequiredKeyNotFound(
-                "dictionary type of choice require a 'name' key and a 'value' key"
-            )
+            raise RequiredKeyNotFound("dictionary type of choice require a 'name' key and a 'value' key")
         return processed_choices
 
     @property
@@ -160,9 +145,7 @@ class InquirerPyUIListControl(FormattedTextControl):
                 should_proceed = True
                 break
         if not should_proceed:
-            raise InvalidArgument(
-                "argument choices should contain choices other than separator"
-            )
+            raise InvalidArgument("argument choices should contain choices other than separator")
 
     def _get_formatted_choices(self) -> list[tuple[str, str]]:
         """Get all choices in formatted text format.

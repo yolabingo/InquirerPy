@@ -1,5 +1,6 @@
 """Module contains the class to create an input prompt."""
-from typing import TYPE_CHECKING, Any, Callable
+
+from typing import TYPE_CHECKING, Any, Callable, Union
 
 from prompt_toolkit.buffer import ValidationState
 from prompt_toolkit.completion import NestedCompleter
@@ -92,7 +93,7 @@ class InputPrompt(BaseSimplePrompt):
         amark: str = "?",
         instruction: str = "",
         long_instruction: str = "",
-        completer: dict[str, str | None] | "Completer | None" = None,
+        completer: Union[dict[str, str | None], "Completer", None] = None,
         multicolumn_complete: bool = False,
         multiline: bool = False,
         validate: InquirerPyValidate | None = None,
@@ -128,20 +129,14 @@ class InputPrompt(BaseSimplePrompt):
             raise_keyboard_interrupt=raise_keyboard_interrupt,
         )
         if not isinstance(self._default, str):
-            raise InvalidArgument(
-                f"{type(self).__name__} argument 'default' should be type of str"
-            )
+            raise InvalidArgument(f"{type(self).__name__} argument 'default' should be type of str")
         self._completer = None
         if isinstance(completer, dict):
             self._completer = NestedCompleter.from_nested_dict(completer)
         elif isinstance(completer, Completer):
             self._completer = completer
         self._multiline = multiline
-        self._complete_style = (
-            CompleteStyle.COLUMN
-            if not multicolumn_complete
-            else CompleteStyle.MULTI_COLUMN
-        )
+        self._complete_style = CompleteStyle.COLUMN if not multicolumn_complete else CompleteStyle.MULTI_COLUMN
 
         @Condition
         def is_multiline():
@@ -175,9 +170,7 @@ class InputPrompt(BaseSimplePrompt):
             multiline=self._multiline,
             complete_style=self._complete_style,
             wrap_lines=wrap_lines,
-            bottom_toolbar=[("class:long_instruction", long_instruction)]
-            if long_instruction
-            else None,
+            bottom_toolbar=[("class:long_instruction", long_instruction)] if long_instruction else None,
         )
 
     def _set_error(self, message: str) -> None:
@@ -241,9 +234,7 @@ class InputPrompt(BaseSimplePrompt):
 
         formatted_message = super()._get_prompt_message(pre_answer, post_answer)
         if not self.status["answered"] and self._multiline:
-            formatted_message.append(
-                ("class:questionmark", "\n%s " % INQUIRERPY_POINTER_SEQUENCE)
-            )
+            formatted_message.append(("class:questionmark", "\n%s " % INQUIRERPY_POINTER_SEQUENCE))
         return formatted_message
 
     def _run(self) -> str:

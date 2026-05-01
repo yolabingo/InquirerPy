@@ -1,4 +1,5 @@
 """Module contains the class to create a confirm prompt."""
+
 from typing import TYPE_CHECKING, Any, Callable
 
 from prompt_toolkit.buffer import ValidationState
@@ -111,9 +112,7 @@ class ConfirmPrompt(BaseSimplePrompt):
             session_result=session_result,
         )
         if not isinstance(self._default, bool):
-            raise InvalidArgument(
-                f"{type(self).__name__} argument default should be type of bool"
-            )
+            raise InvalidArgument(f"{type(self).__name__} argument default should be type of bool")
         self._confirm_letter = confirm_letter
         self._reject_letter = reject_letter
 
@@ -143,9 +142,7 @@ class ConfirmPrompt(BaseSimplePrompt):
             key_bindings=self._kb,
             style=self._style,
             wrap_lines=self._wrap_lines,
-            bottom_toolbar=[("class:long_instruction", long_instruction)]
-            if long_instruction
-            else None,
+            bottom_toolbar=[("class:long_instruction", long_instruction)] if long_instruction else None,
             input=input,
             output=output,
         )
