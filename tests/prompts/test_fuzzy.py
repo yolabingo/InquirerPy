@@ -3,7 +3,7 @@ import unittest
 from typing import Callable, NamedTuple
 from unittest.mock import ANY, MagicMock, call, patch
 
-from pfzy.score import fzy_scorer, substr_scorer
+from InquirerPy._pfzy.score import fzy_scorer, substr_scorer
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.layout.layout import Layout
