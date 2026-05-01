@@ -13,9 +13,9 @@ from typing import (
     cast,
 )
 
-from pfzy import fuzzy_match
-from pfzy.score import fzy_scorer, substr_scorer
-from pfzy.types import HAYSTACKS
+from InquirerPy._pfzy import fuzzy_match
+from InquirerPy._pfzy.score import fzy_scorer, substr_scorer
+from InquirerPy._pfzy.types import HAYSTACKS
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.filters.cli import IsDone
