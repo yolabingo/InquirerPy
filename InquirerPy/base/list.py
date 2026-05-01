@@ -1,6 +1,7 @@
 """Contains the base class :class:`.BaseListPrompt` which can be used to create a prompt involving choices."""
+
 from abc import abstractmethod
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable
 
 from prompt_toolkit.filters.base import Condition
 from prompt_toolkit.keys import Keys
@@ -32,25 +33,25 @@ class BaseListPrompt(BaseComplexPrompt):
     def __init__(
         self,
         message: InquirerPyMessage,
-        style: Optional[InquirerPyStyle] = None,
+        style: InquirerPyStyle | None = None,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
         long_instruction: str = "",
         border: bool = False,
-        transformer: Optional[Callable[[Any], Any]] = None,
-        filter: Optional[Callable[[Any], Any]] = None,
-        validate: Optional[InquirerPyValidate] = None,
+        transformer: Callable[[Any], Any] | None = None,
+        filter: Callable[[Any], Any] | None = None,
+        validate: InquirerPyValidate | None = None,
         invalid_message: str = "Invalid input",
         multiselect: bool = False,
-        keybindings: Optional[InquirerPyKeybindings] = None,
+        keybindings: InquirerPyKeybindings | None = None,
         cycle: bool = True,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: Optional[InquirerPySessionResult] = None,
+        session_result: InquirerPySessionResult | None = None,
     ) -> None:
         super().__init__(
             message=message,
@@ -178,8 +179,8 @@ class BaseListPrompt(BaseComplexPrompt):
                 return ""
 
     @property
-    def selected_choices(self) -> List[Any]:
-        """List[Any]: Get all user selected choices."""
+    def selected_choices(self) -> list[Any]:
+        """list[Any]: Get all user selected choices."""
 
         def filter_choice(choice):
             return not isinstance(choice, Separator) and choice["enabled"]
@@ -192,6 +193,8 @@ class BaseListPrompt(BaseComplexPrompt):
         Returns:
             Boolean indicating if the action hits the cap.
         """
+        if self.content_control.choice_count == 0:
+            return True
         if self._cycle:
             self.content_control.selected_choice_index = (
                 self.content_control.selected_choice_index + 1
@@ -199,13 +202,8 @@ class BaseListPrompt(BaseComplexPrompt):
             return False
         else:
             self.content_control.selected_choice_index += 1
-            if (
-                self.content_control.selected_choice_index
-                >= self.content_control.choice_count
-            ):
-                self.content_control.selected_choice_index = (
-                    self.content_control.choice_count - 1
-                )
+            if self.content_control.selected_choice_index >= self.content_control.choice_count:
+                self.content_control.selected_choice_index = self.content_control.choice_count - 1
                 return True
             return False
 
@@ -215,6 +213,8 @@ class BaseListPrompt(BaseComplexPrompt):
         Returns:
             Boolean indicating if the action hits the cap.
         """
+        if self.content_control.choice_count == 0:
+            return True
         if self._cycle:
             self.content_control.selected_choice_index = (
                 self.content_control.selected_choice_index - 1

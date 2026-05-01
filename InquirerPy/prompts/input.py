@@ -1,5 +1,6 @@
 """Module contains the class to create an input prompt."""
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
+
+from typing import TYPE_CHECKING, Any, Callable, Union
 
 from prompt_toolkit.buffer import ValidationState
 from prompt_toolkit.completion import NestedCompleter
@@ -85,29 +86,29 @@ class InputPrompt(BaseSimplePrompt):
     def __init__(
         self,
         message: InquirerPyMessage,
-        style: Optional[InquirerPyStyle] = None,
+        style: InquirerPyStyle | None = None,
         vi_mode: bool = False,
         default: InquirerPyDefault = "",
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
         long_instruction: str = "",
-        completer: Optional[Union[Dict[str, Optional[str]], "Completer"]] = None,
+        completer: Union[dict[str, str | None], "Completer", None] = None,
         multicolumn_complete: bool = False,
         multiline: bool = False,
-        validate: Optional[InquirerPyValidate] = None,
+        validate: InquirerPyValidate | None = None,
         invalid_message: str = "Invalid input",
-        transformer: Optional[Callable[[str], Any]] = None,
-        filter: Optional[Callable[[str], Any]] = None,
-        keybindings: Optional[InquirerPyKeybindings] = None,
+        transformer: Callable[[str], Any] | None = None,
+        filter: Callable[[str], Any] | None = None,
+        keybindings: InquirerPyKeybindings | None = None,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         is_password: bool = False,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: Optional[InquirerPySessionResult] = None,
-        input: Optional["Input"] = None,
-        output: Optional["Output"] = None,
+        session_result: InquirerPySessionResult | None = None,
+        input: "Input | None" = None,
+        output: "Output | None" = None,
     ) -> None:
         super().__init__(
             message,
@@ -128,20 +129,14 @@ class InputPrompt(BaseSimplePrompt):
             raise_keyboard_interrupt=raise_keyboard_interrupt,
         )
         if not isinstance(self._default, str):
-            raise InvalidArgument(
-                f"{type(self).__name__} argument 'default' should be type of str"
-            )
+            raise InvalidArgument(f"{type(self).__name__} argument 'default' should be type of str")
         self._completer = None
         if isinstance(completer, dict):
             self._completer = NestedCompleter.from_nested_dict(completer)
         elif isinstance(completer, Completer):
             self._completer = completer
         self._multiline = multiline
-        self._complete_style = (
-            CompleteStyle.COLUMN
-            if not multicolumn_complete
-            else CompleteStyle.MULTI_COLUMN
-        )
+        self._complete_style = CompleteStyle.COLUMN if not multicolumn_complete else CompleteStyle.MULTI_COLUMN
 
         @Condition
         def is_multiline():
@@ -175,9 +170,7 @@ class InputPrompt(BaseSimplePrompt):
             multiline=self._multiline,
             complete_style=self._complete_style,
             wrap_lines=wrap_lines,
-            bottom_toolbar=[("class:long_instruction", long_instruction)]
-            if long_instruction
-            else None,
+            bottom_toolbar=[("class:long_instruction", long_instruction)] if long_instruction else None,
         )
 
     def _set_error(self, message: str) -> None:
@@ -206,9 +199,9 @@ class InputPrompt(BaseSimplePrompt):
 
     def _get_prompt_message(
         self,
-        pre_answer: Optional[Tuple[str, str]] = None,
-        post_answer: Optional[Tuple[str, str]] = None,
-    ) -> List[Tuple[str, str]]:
+        pre_answer: tuple[str, str] | None = None,
+        post_answer: tuple[str, str] | None = None,
+    ) -> list[tuple[str, str]]:
         """Get message to display infront of the input buffer.
 
         Args:
@@ -241,9 +234,7 @@ class InputPrompt(BaseSimplePrompt):
 
         formatted_message = super()._get_prompt_message(pre_answer, post_answer)
         if not self.status["answered"] and self._multiline:
-            formatted_message.append(
-                ("class:questionmark", "\n%s " % INQUIRERPY_POINTER_SEQUENCE)
-            )
+            formatted_message.append(("class:questionmark", "\n%s " % INQUIRERPY_POINTER_SEQUENCE))
         return formatted_message
 
     def _run(self) -> str:

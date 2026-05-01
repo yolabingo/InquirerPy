@@ -1,5 +1,6 @@
 """Module contains the class to create a secret prompt."""
-from typing import TYPE_CHECKING, Any, Callable, List, Optional, Tuple
+
+from typing import TYPE_CHECKING, Any, Callable
 
 from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.utils import (
@@ -67,25 +68,25 @@ class SecretPrompt(InputPrompt):
     def __init__(
         self,
         message: InquirerPyMessage,
-        style: Optional[InquirerPyStyle] = None,
+        style: InquirerPyStyle | None = None,
         default: InquirerPyDefault = "",
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
         long_instruction: str = "",
         vi_mode: bool = False,
-        validate: Optional[InquirerPyValidate] = None,
+        validate: InquirerPyValidate | None = None,
         invalid_message: str = "Invalid input",
-        transformer: Optional[Callable[[str], Any]] = None,
-        filter: Optional[Callable[[str], Any]] = None,
-        keybindings: Optional[InquirerPyKeybindings] = None,
+        transformer: Callable[[str], Any] | None = None,
+        filter: Callable[[str], Any] | None = None,
+        keybindings: InquirerPyKeybindings | None = None,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: Optional[InquirerPySessionResult] = None,
-        input: Optional["Input"] = None,
-        output: Optional["Output"] = None,
+        session_result: InquirerPySessionResult | None = None,
+        input: "Input | None" = None,
+        output: "Output | None" = None,
     ) -> None:
         super().__init__(
             message=message,
@@ -111,7 +112,7 @@ class SecretPrompt(InputPrompt):
             output=output,
         )
 
-    def _get_prompt_message(self) -> List[Tuple[str, str]]:
+    def _get_prompt_message(self) -> list[tuple[str, str]]:
         """Get message to display infront of the input buffer.
 
         Args:
@@ -127,8 +128,6 @@ class SecretPrompt(InputPrompt):
         )
         post_answer = (
             "class:answer",
-            ""
-            if not self.status["result"]
-            else " %s" % "".join(["*" for _ in self.status["result"]]),
+            "" if not self.status["result"] else " %s" % "".join(["*" for _ in self.status["result"]]),
         )
         return super()._get_prompt_message(pre_answer, post_answer)

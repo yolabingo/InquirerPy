@@ -1,6 +1,7 @@
 """Module contains the class to create an expand prompt."""
+
 from dataclasses import dataclass
-from typing import Any, Callable, List, Optional, Tuple, Union
+from typing import Any, Callable
 
 from InquirerPy.base import BaseListPrompt, InquirerPyUIListControl
 from InquirerPy.base.control import Choice
@@ -51,7 +52,7 @@ class ExpandChoice(Choice):
             If this value is missing, the first char of the `str(value)` will be used as the key.
     """
 
-    key: Optional[str] = None
+    key: str | None = None
 
     def __post_init__(self):
         """Assign stringify value to name and also create key using the first char of the value if not present."""
@@ -75,7 +76,7 @@ class InquirerPyExpandControl(InquirerPyUIListControl):
         expand_help: ExpandHelp,
         expand_pointer: str,
         marker: str,
-        session_result: Optional[InquirerPySessionResult],
+        session_result: InquirerPySessionResult | None,
         multiselect: bool,
         marker_pl: str,
     ) -> None:
@@ -110,17 +111,11 @@ class InquirerPyExpandControl(InquirerPyUIListControl):
                 if isinstance(raw_choice, Separator):
                     separator_count += 1
                 else:
-                    choice["key"] = (
-                        raw_choice.key
-                        if isinstance(raw_choice, ExpandChoice)
-                        else raw_choice["key"]
-                    )
+                    choice["key"] = raw_choice.key if isinstance(raw_choice, ExpandChoice) else raw_choice["key"]
                     self._key_maps[choice["key"]] = count
                 count += 1
         except KeyError:
-            raise RequiredKeyNotFound(
-                "expand prompt choice requires a key 'key' to exists"
-            )
+            raise RequiredKeyNotFound("expand prompt choice requires a key 'key' to exists")
 
         self.choices.append(
             {
@@ -143,7 +138,7 @@ class InquirerPyExpandControl(InquirerPyUIListControl):
                     self.selected_choice_index = index
                     break
 
-    def _get_formatted_choices(self) -> List[Tuple[str, str]]:
+    def _get_formatted_choices(self) -> list[tuple[str, str]]:
         """Override this parent class method as expand require visual switch of content.
 
         Two types of mode:
@@ -155,12 +150,10 @@ class InquirerPyExpandControl(InquirerPyUIListControl):
         else:
             display_choices = []
             display_choices.append(("class:pointer", self._expand_pointer))
-            display_choices.append(
-                ("", self.choices[self.selected_choice_index]["name"])
-            )
+            display_choices.append(("", self.choices[self.selected_choice_index]["name"]))
         return display_choices
 
-    def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
+    def _get_hover_text(self, choice) -> list[tuple[str, str]]:
         display_choices = []
         display_choices.append(("class:pointer", self._pointer))
         display_choices.append(
@@ -170,14 +163,12 @@ class InquirerPyExpandControl(InquirerPyUIListControl):
             )
         )
         if not isinstance(choice["value"], Separator):
-            display_choices.append(
-                ("class:pointer", "%s%s" % (choice["key"], self._separator))
-            )
+            display_choices.append(("class:pointer", "%s%s" % (choice["key"], self._separator)))
         display_choices.append(("[SetCursorPosition]", ""))
         display_choices.append(("class:pointer", choice["name"]))
         return display_choices
 
-    def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
+    def _get_normal_text(self, choice) -> list[tuple[str, str]]:
         display_choices = []
         display_choices.append(("", len(self._pointer) * " "))
         display_choices.append(
@@ -274,35 +265,35 @@ class ExpandPrompt(ListPrompt):
         message: InquirerPyMessage,
         choices: InquirerPyListChoices,
         default: InquirerPyDefault = "",
-        style: Optional[InquirerPyStyle] = None,
+        style: InquirerPyStyle | None = None,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
         pointer: str = " ",
         separator: str = ") ",
         help_msg: str = "Help, list all choices",
-        expand_help: Optional[ExpandHelp] = None,
+        expand_help: ExpandHelp | None = None,
         expand_pointer: str = "%s " % INQUIRERPY_POINTER_SEQUENCE,
         instruction: str = "",
         long_instruction: str = "",
-        transformer: Optional[Callable[[Any], Any]] = None,
-        filter: Optional[Callable[[Any], Any]] = None,
-        height: Optional[Union[int, str]] = None,
-        max_height: Optional[Union[int, str]] = None,
+        transformer: Callable[[Any], Any] | None = None,
+        filter: Callable[[Any], Any] | None = None,
+        height: int | str | None = None,
+        max_height: int | str | None = None,
         multiselect: bool = False,
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
         marker_pl: str = " ",
         border: bool = False,
-        validate: Optional[InquirerPyValidate] = None,
+        validate: InquirerPyValidate | None = None,
         invalid_message: str = "Invalid input",
-        keybindings: Optional[InquirerPyKeybindings] = None,
+        keybindings: InquirerPyKeybindings | None = None,
         show_cursor: bool = True,
         cycle: bool = True,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: Optional[InquirerPySessionResult] = None,
+        session_result: InquirerPySessionResult | None = None,
     ) -> None:
         if expand_help is None:
             expand_help = ExpandHelp(message=help_msg)
@@ -359,9 +350,7 @@ class ExpandPrompt(ListPrompt):
                 if key == self._expand_help.key:
                     self.content_control._expanded = not self.content_control._expanded
                 else:
-                    self.content_control.selected_choice_index = (
-                        self.content_control._key_maps[key]
-                    )
+                    self.content_control.selected_choice_index = self.content_control._key_maps[key]
 
             return keybinding
 
@@ -378,9 +367,9 @@ class ExpandPrompt(ListPrompt):
             return
         while True:
             cap = BaseListPrompt._handle_up(self, event)
-            if not isinstance(
-                self.content_control.selection["value"], Separator
-            ) and not isinstance(self.content_control.selection["value"], ExpandHelp):
+            if not isinstance(self.content_control.selection["value"], Separator) and not isinstance(
+                self.content_control.selection["value"], ExpandHelp
+            ):
                 break
             else:
                 if cap and not self._cycle:
@@ -396,14 +385,11 @@ class ExpandPrompt(ListPrompt):
             return
         while True:
             cap = BaseListPrompt._handle_down(self, event)
-            if not isinstance(
-                self.content_control.selection["value"], Separator
-            ) and not isinstance(self.content_control.selection["value"], ExpandHelp):
-                break
-            elif (
-                isinstance(self.content_control.selection["value"], ExpandHelp)
-                and not self._cycle
+            if not isinstance(self.content_control.selection["value"], Separator) and not isinstance(
+                self.content_control.selection["value"], ExpandHelp
             ):
+                break
+            elif isinstance(self.content_control.selection["value"], ExpandHelp) and not self._cycle:
                 self._handle_up(event)
                 break
             else:
@@ -419,25 +405,19 @@ class ExpandPrompt(ListPrompt):
 
         :return: The instruction text.
         """
-        return (
-            "(%s)" % "".join(self.content_control._key_maps.keys())
-            if not self._instruction
-            else self._instruction
-        )
+        return "(%s)" % "".join(self.content_control._key_maps.keys()) if not self._instruction else self._instruction
 
-    def _get_prompt_message(self) -> List[Tuple[str, str]]:
+    def _get_prompt_message(self) -> list[tuple[str, str]]:
         """Return the formatted text to display in the prompt.
 
         Overriding this method to allow multiple formatted class to be displayed.
         """
         display_message = super()._get_prompt_message()
         if not self.status["answered"]:
-            display_message.append(
-                ("class:input", self.content_control.selection["key"])
-            )
+            display_message.append(("class:input", self.content_control.selection["key"]))
         return display_message
 
-    def _handle_toggle_all(self, _, value: Optional[bool] = None) -> None:
+    def _handle_toggle_all(self, _, value: bool | None = None) -> None:
         """Override this method to ignore `ExpandHelp`.
 
         :param value: Specify a value to toggle.
@@ -445,9 +425,7 @@ class ExpandPrompt(ListPrompt):
         if not self.content_control._expanded:
             return
         for choice in self.content_control.choices:
-            if isinstance(choice["value"], Separator) or isinstance(
-                choice["value"], ExpandHelp
-            ):
+            if isinstance(choice["value"], Separator) or isinstance(choice["value"], ExpandHelp):
                 continue
             choice["enabled"] = value if value else not choice["enabled"]
 

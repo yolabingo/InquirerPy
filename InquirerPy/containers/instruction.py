@@ -21,11 +21,7 @@ class InstructionWindow(ConditionalContainer):
     def __init__(self, message: str, filter: "FilterOrBool", **kwargs) -> None:
         self._message = message
         super().__init__(
-            Window(
-                FormattedTextControl(text=self._get_message),
-                dont_extend_height=True,
-                **kwargs
-            ),
+            Window(FormattedTextControl(text=self._get_message), dont_extend_height=True, **kwargs),
             filter=filter,
         )
 

@@ -1,7 +1,8 @@
 """Contains the content control class :class:`.InquirerPyUIListControl`."""
+
 from abc import abstractmethod
 from dataclasses import asdict, dataclass
-from typing import Any, Callable, Dict, List, Optional, Tuple, cast
+from typing import Any, Callable, cast
 
 from prompt_toolkit.layout.controls import FormattedTextControl
 
@@ -28,7 +29,7 @@ class Choice:
     """
 
     value: Any
-    name: Optional[str] = None
+    name: str | None = None
     enabled: bool = False
 
     def __post_init__(self):
@@ -53,28 +54,22 @@ class InquirerPyUIListControl(FormattedTextControl):
         choices: InquirerPyListChoices,
         default: Any = None,
         multiselect: bool = False,
-        session_result: Optional[InquirerPySessionResult] = None,
+        session_result: InquirerPySessionResult | None = None,
     ) -> None:
         self._session_result = session_result or {}
         self._selected_choice_index: int = 0
         self._choice_func = None
         self._multiselect = multiselect
-        self._default = (
-            default
-            if not isinstance(default, Callable)
-            else cast(Callable, default)(self._session_result)
-        )
+        self._default = default if not isinstance(default, Callable) else cast(Callable, default)(self._session_result)
         self._raw_choices = (
-            choices
-            if not isinstance(choices, Callable)
-            else cast(Callable, choices)(self._session_result)
+            choices if not isinstance(choices, Callable) else cast(Callable, choices)(self._session_result)
         )
         self._choices = self._get_choices(self._raw_choices, self._default)
         self._safety_check()
         self._format_choices()
         super().__init__(self._get_formatted_choices)
 
-    def _get_choices(self, choices: List[Any], default: Any) -> List[Dict[str, Any]]:
+    def _get_choices(self, choices: list[Any], default: Any) -> list[dict[str, Any]]:
         """Process the raw user input choices and format it into dictionary.
 
         Args:
@@ -87,7 +82,7 @@ class InquirerPyUIListControl(FormattedTextControl):
         Raises:
             RequiredKeyNotFound: When the provided choice is missing the `name` or `value` key.
         """
-        processed_choices: List[Dict[str, Any]] = []
+        processed_choices: list[dict[str, Any]] = []
         try:
             for index, choice in enumerate(choices, start=0):
                 if isinstance(choice, dict):
@@ -97,19 +92,13 @@ class InquirerPyUIListControl(FormattedTextControl):
                         {
                             "name": str(choice["name"]),
                             "value": choice["value"],
-                            "enabled": choice.get("enabled", False)
-                            if self._multiselect
-                            else False,
+                            "enabled": choice.get("enabled", False) if self._multiselect else False,
                         }
                     )
                 elif isinstance(choice, Separator):
                     if self.selected_choice_index == index:
-                        self.selected_choice_index = (
-                            self.selected_choice_index + 1
-                        ) % len(choices)
-                    processed_choices.append(
-                        {"name": str(choice), "value": choice, "enabled": False}
-                    )
+                        self.selected_choice_index = (self.selected_choice_index + 1) % len(choices)
+                    processed_choices.append({"name": str(choice), "value": choice, "enabled": False})
                 elif isinstance(choice, Choice):
                     dict_choice = asdict(choice)
                     if dict_choice["value"] == default:
@@ -120,13 +109,9 @@ class InquirerPyUIListControl(FormattedTextControl):
                 else:
                     if choice == default:
                         self.selected_choice_index = index
-                    processed_choices.append(
-                        {"name": str(choice), "value": choice, "enabled": False}
-                    )
+                    processed_choices.append({"name": str(choice), "value": choice, "enabled": False})
         except KeyError:
-            raise RequiredKeyNotFound(
-                "dictionary type of choice require a 'name' key and a 'value' key"
-            )
+            raise RequiredKeyNotFound("dictionary type of choice require a 'name' key and a 'value' key")
         return processed_choices
 
     @property
@@ -139,12 +124,12 @@ class InquirerPyUIListControl(FormattedTextControl):
         self._selected_choice_index = value
 
     @property
-    def choices(self) -> List[Dict[str, Any]]:
-        """List[Dict[str, Any]]: Get all processed choices."""
+    def choices(self) -> list[dict[str, Any]]:
+        """list[dict[str, Any]]: Get all processed choices."""
         return self._choices
 
     @choices.setter
-    def choices(self, value: List[Dict[str, Any]]) -> None:
+    def choices(self, value: list[dict[str, Any]]) -> None:
         self._choices = value
 
     def _safety_check(self) -> None:
@@ -160,11 +145,9 @@ class InquirerPyUIListControl(FormattedTextControl):
                 should_proceed = True
                 break
         if not should_proceed:
-            raise InvalidArgument(
-                "argument choices should contain choices other than separator"
-            )
+            raise InvalidArgument("argument choices should contain choices other than separator")
 
-    def _get_formatted_choices(self) -> List[Tuple[str, str]]:
+    def _get_formatted_choices(self) -> list[tuple[str, str]]:
         """Get all choices in formatted text format.
 
         Returns:
@@ -190,7 +173,7 @@ class InquirerPyUIListControl(FormattedTextControl):
         pass
 
     @abstractmethod
-    def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
+    def _get_hover_text(self, choice) -> list[tuple[str, str]]:
         """Generate the formatted text for hovered choice.
 
         Returns:
@@ -199,7 +182,7 @@ class InquirerPyUIListControl(FormattedTextControl):
         pass
 
     @abstractmethod
-    def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
+    def _get_normal_text(self, choice) -> list[tuple[str, str]]:
         """Generate the formatted text for non-hovered choices.
 
         Returns:
@@ -213,8 +196,8 @@ class InquirerPyUIListControl(FormattedTextControl):
         return len(self.choices)
 
     @property
-    def selection(self) -> Dict[str, Any]:
-        """Dict[str, Any]: Current selected choice."""
+    def selection(self) -> dict[str, Any]:
+        """dict[str, Any]: Current selected choice."""
         return self.choices[self.selected_choice_index]
 
     @property

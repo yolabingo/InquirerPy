@@ -1,5 +1,6 @@
 """Module contains the class to create a rawlist prompt."""
-from typing import Any, Callable, List, Optional, Tuple, Union
+
+from typing import Any, Callable
 
 from InquirerPy.base import InquirerPyUIListControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
@@ -32,7 +33,7 @@ class InquirerPyRawlistControl(InquirerPyUIListControl):
         pointer: str,
         separator: str,
         marker: str,
-        session_result: Optional[InquirerPySessionResult],
+        session_result: InquirerPySessionResult | None,
         multiselect: bool,
         marker_pl: str,
     ) -> None:
@@ -58,9 +59,7 @@ class InquirerPyRawlistControl(InquirerPyUIListControl):
 
         if self.choices:
             first_valid_choice_index = 0
-            while isinstance(
-                self.choices[first_valid_choice_index]["value"], Separator
-            ):
+            while isinstance(self.choices[first_valid_choice_index]["value"], Separator):
                 first_valid_choice_index += 1
             if self.selected_choice_index == first_valid_choice_index:
                 for choice in self.choices:
@@ -70,7 +69,7 @@ class InquirerPyRawlistControl(InquirerPyUIListControl):
                         self.selected_choice_index = choice["actual_index"]
                         break
 
-    def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
+    def _get_hover_text(self, choice) -> list[tuple[str, str]]:
         display_choices = []
         display_choices.append(("class:pointer", self._pointer))
         display_choices.append(
@@ -90,7 +89,7 @@ class InquirerPyRawlistControl(InquirerPyUIListControl):
         display_choices.append(("class:pointer", choice["name"]))
         return display_choices
 
-    def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
+    def _get_normal_text(self, choice) -> list[tuple[str, str]]:
         display_choices = []
         display_choices.append(("", len(self._pointer) * " "))
         display_choices.append(
@@ -100,9 +99,7 @@ class InquirerPyRawlistControl(InquirerPyUIListControl):
             )
         )
         if not isinstance(choice["value"], Separator):
-            display_choices.append(
-                ("", "%s%s" % (str(choice["display_index"]), self._separator))
-            )
+            display_choices.append(("", "%s%s" % (str(choice["display_index"]), self._separator)))
             display_choices.append(("", choice["name"]))
         else:
             display_choices.append(("class:separator", choice["name"]))
@@ -185,31 +182,31 @@ class RawlistPrompt(ListPrompt):
         choices: InquirerPyListChoices,
         default: InquirerPyDefault = None,
         separator: str = ") ",
-        style: Optional[InquirerPyStyle] = None,
+        style: InquirerPyStyle | None = None,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
         pointer: str = " ",
         instruction: str = "",
         long_instruction: str = "",
-        transformer: Optional[Callable[[Any], Any]] = None,
-        filter: Optional[Callable[[Any], Any]] = None,
-        height: Optional[Union[int, str]] = None,
-        max_height: Optional[Union[int, str]] = None,
+        transformer: Callable[[Any], Any] | None = None,
+        filter: Callable[[Any], Any] | None = None,
+        height: int | str | None = None,
+        max_height: int | str | None = None,
         multiselect: bool = False,
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
         marker_pl: str = " ",
         border: bool = False,
-        validate: Optional[InquirerPyValidate] = None,
+        validate: InquirerPyValidate | None = None,
         invalid_message: str = "Invalid input",
-        keybindings: Optional[InquirerPyKeybindings] = None,
+        keybindings: InquirerPyKeybindings | None = None,
         show_cursor: bool = True,
         cycle: bool = True,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: Optional[InquirerPySessionResult] = None,
+        session_result: InquirerPySessionResult | None = None,
     ) -> None:
         self.content_control = InquirerPyRawlistControl(
             choices=choices,
@@ -272,14 +269,12 @@ class RawlistPrompt(ListPrompt):
             if not isinstance(choice["value"], Separator):
                 keybinding_factory(choice)
 
-    def _get_prompt_message(self) -> List[Tuple[str, str]]:
+    def _get_prompt_message(self) -> list[tuple[str, str]]:
         """Return the formatted text to display in the prompt.
 
         Overriding this method to allow multiple formatted class to be displayed.
         """
         display_message = super()._get_prompt_message()
         if not self.status["answered"] and self.content_control.choices:
-            display_message.append(
-                ("class:input", str(self.content_control.selection["display_index"]))
-            )
+            display_message.append(("class:input", str(self.content_control.selection["display_index"])))
         return display_message

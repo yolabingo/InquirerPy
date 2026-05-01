@@ -1,4 +1,5 @@
 """Contains the base class :class:`.BaseSimplePrompt`."""
+
 import os
 import re
 from abc import ABC, abstractmethod
@@ -6,11 +7,6 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    Dict,
-    List,
-    Optional,
-    Tuple,
-    Union,
     cast,
 )
 
@@ -53,34 +49,28 @@ class BaseSimplePrompt(ABC):
     def __init__(
         self,
         message: InquirerPyMessage,
-        style: Optional[InquirerPyStyle] = None,
+        style: InquirerPyStyle | None = None,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
-        validate: Optional[InquirerPyValidate] = None,
+        validate: InquirerPyValidate | None = None,
         invalid_message: str = "Invalid input",
-        transformer: Optional[Callable[[Any], Any]] = None,
-        filter: Optional[Callable[[Any], Any]] = None,
+        transformer: Callable[[Any], Any] | None = None,
+        filter: Callable[[Any], Any] | None = None,
         default: Any = "",
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: Optional[InquirerPySessionResult] = None,
+        session_result: InquirerPySessionResult | None = None,
     ) -> None:
         self._mandatory = mandatory
         self._mandatory_message = mandatory_message
         self._result = session_result or {}
-        self._message = (
-            message
-            if not isinstance(message, Callable)
-            else cast(Callable, message)(self._result)
-        )
+        self._message = message if not isinstance(message, Callable) else cast(Callable, message)(self._result)
         self._instruction = instruction
-        self._default = (
-            default if not isinstance(default, Callable) else default(self._result)
-        )
+        self._default = default if not isinstance(default, Callable) else default(self._result)
         self._style = Style.from_dict(style.dict if style else get_style().dict)
         self._qmark = qmark
         self._amark = amark
@@ -91,9 +81,7 @@ class BaseSimplePrompt(ABC):
         self._filter = filter
         self._wrap_lines = wrap_lines
         self._editing_mode = (
-            EditingMode.VI
-            if vi_mode or bool(os.getenv("INQUIRERPY_VI_MODE", False))
-            else EditingMode.EMACS
+            EditingMode.VI if vi_mode or bool(os.getenv("INQUIRERPY_VI_MODE", False)) else EditingMode.EMACS
         )
         if isinstance(validate, Validator):
             self._validator = validate
@@ -103,9 +91,7 @@ class BaseSimplePrompt(ABC):
                 invalid_message,
                 move_cursor_to_end=True,
             )
-        self._raise_kbi = not os.getenv(
-            "INQUIRERPY_NO_RAISE_KBI", not raise_keyboard_interrupt
-        )
+        self._raise_kbi = not os.getenv("INQUIRERPY_NO_RAISE_KBI", not raise_keyboard_interrupt)
         self._is_rasing_kbi = Condition(lambda: self._raise_kbi)
 
         self._kb_maps = {
@@ -156,7 +142,7 @@ class BaseSimplePrompt(ABC):
         """
         pass
 
-    def _handle_skip(self, event: Optional["KeyPressEvent"]) -> None:
+    def _handle_skip(self, event: "KeyPressEvent | None") -> None:
         """Handle the event when attempting to skip a prompt.
 
         Skip the prompt if the `_mandatory` field is False, otherwise
@@ -171,7 +157,7 @@ class BaseSimplePrompt(ABC):
         else:
             self._set_error(message=self._mandatory_message)
 
-    def _handle_interrupt(self, event: Optional["KeyPressEvent"]) -> None:
+    def _handle_interrupt(self, event: "KeyPressEvent | None") -> None:
         """Handle the event when a KeyboardInterrupt signal is sent."""
         self.status["answered"] = True
         self.status["result"] = INQUIRERPY_KEYBOARD_INTERRUPT
@@ -180,13 +166,13 @@ class BaseSimplePrompt(ABC):
             event.app.exit(result=INQUIRERPY_KEYBOARD_INTERRUPT)
 
     @abstractmethod
-    def _handle_enter(self, event: Optional["KeyPressEvent"]) -> None:
+    def _handle_enter(self, event: "KeyPressEvent | None") -> None:
         """Handle the event when user attempt to answer the question."""
         pass
 
     @property
-    def status(self) -> Dict[str, Any]:
-        """Dict[str, Any]: Get current prompt status.
+    def status(self) -> dict[str, Any]:
+        """dict[str, Any]: Get current prompt status.
 
         The status contains 3 keys: "answered" and "result".
             answered: If the current prompt is answered.
@@ -200,7 +186,7 @@ class BaseSimplePrompt(ABC):
         self._status = value
 
     def register_kb(
-        self, *keys: Union[Keys, str], filter: FilterOrBool = True, **kwargs
+        self, *keys: Keys | str, filter: FilterOrBool = True, **kwargs
     ) -> Callable[[KeyHandlerCallable], KeyHandlerCallable]:
         """Keybinding registration decorator.
 
@@ -244,9 +230,7 @@ class BaseSimplePrompt(ABC):
         return decorator
 
     @abstractmethod
-    def _get_prompt_message(
-        self, pre_answer: Tuple[str, str], post_answer: Tuple[str, str]
-    ) -> List[Tuple[str, str]]:
+    def _get_prompt_message(self, pre_answer: tuple[str, str], post_answer: tuple[str, str]) -> list[tuple[str, str]]:
         """Get the question message in formatted text form to display in the prompt.
 
         This function is mainly used to render the question message dynamically based
@@ -267,9 +251,7 @@ class BaseSimplePrompt(ABC):
         display_message = []
         if self.status["skipped"]:
             display_message.append(("class:skipped", self._qmark))
-            display_message.append(
-                ("class:skipped", "%s%s " % (" " if self._qmark else "", self._message))
-            )
+            display_message.append(("class:skipped", "%s%s " % (" " if self._qmark else "", self._message)))
         elif self.status["answered"]:
             display_message.append(("class:answermark", self._amark))
             display_message.append(
@@ -315,7 +297,7 @@ class BaseSimplePrompt(ABC):
         """
         pass
 
-    def execute(self, raise_keyboard_interrupt: Optional[bool] = None) -> Any:
+    def execute(self, raise_keyboard_interrupt: bool | None = None) -> Any:
         """Run the prompt and get the result.
 
         Args:
@@ -329,9 +311,7 @@ class BaseSimplePrompt(ABC):
         """
         result = self._run()
         if raise_keyboard_interrupt is not None:
-            self._raise_kbi = not os.getenv(
-                "INQUIRERPY_NO_RAISE_KBI", not raise_keyboard_interrupt
-            )
+            self._raise_kbi = not os.getenv("INQUIRERPY_NO_RAISE_KBI", not raise_keyboard_interrupt)
         if result == INQUIRERPY_KEYBOARD_INTERRUPT:
             raise KeyboardInterrupt
         if not self._filter:
@@ -360,19 +340,19 @@ class BaseSimplePrompt(ABC):
         return self._instruction
 
     @property
-    def kb_maps(self) -> Dict[str, Any]:
-        """Dict[str, Any]: Keybinding mappings."""
+    def kb_maps(self) -> dict[str, Any]:
+        """dict[str, Any]: Keybinding mappings."""
         return self._kb_maps
 
     @kb_maps.setter
-    def kb_maps(self, value: Dict[str, Any]) -> None:
+    def kb_maps(self, value: dict[str, Any]) -> None:
         self._kb_maps = {**self._kb_maps, **value}
 
     @property
-    def kb_func_lookup(self) -> Dict[str, Any]:
-        """Dict[str, Any]: Keybinding function lookup mappings.."""
+    def kb_func_lookup(self) -> dict[str, Any]:
+        """dict[str, Any]: Keybinding function lookup mappings.."""
         return self._kb_func_lookup
 
     @kb_func_lookup.setter
-    def kb_func_lookup(self, value: Dict[str, Any]) -> None:
+    def kb_func_lookup(self, value: dict[str, Any]) -> None:
         self._kb_func_lookup = {**self._kb_func_lookup, **value}

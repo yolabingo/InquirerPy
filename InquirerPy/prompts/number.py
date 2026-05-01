@@ -1,7 +1,8 @@
 """Module contains the class to create a number prompt."""
+
 import re
 from decimal import Decimal
-from typing import TYPE_CHECKING, Any, Callable, Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, cast
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
@@ -105,28 +106,28 @@ class NumberPrompt(BaseComplexPrompt):
     def __init__(
         self,
         message: InquirerPyMessage,
-        style: Optional[InquirerPyStyle] = None,
+        style: InquirerPyStyle | None = None,
         vi_mode: bool = False,
         default: InquirerPyDefault = 0,
         float_allowed: bool = False,
-        max_allowed: Optional[Union[int, float]] = None,
-        min_allowed: Optional[Union[int, float]] = None,
+        max_allowed: int | float | None = None,
+        min_allowed: int | float | None = None,
         decimal_symbol: str = ". ",
         replace_mode: bool = False,
         qmark: str = INQUIRERPY_QMARK_SEQUENCE,
         amark: str = "?",
         instruction: str = "",
         long_instruction: str = "",
-        validate: Optional[InquirerPyValidate] = None,
+        validate: InquirerPyValidate | None = None,
         invalid_message: str = "Invalid input",
-        transformer: Optional[Callable[[str], Any]] = None,
-        filter: Optional[Callable[[str], Any]] = None,
-        keybindings: Optional[InquirerPyKeybindings] = None,
+        transformer: Callable[[str], Any] | None = None,
+        filter: Callable[[str], Any] | None = None,
+        keybindings: InquirerPyKeybindings | None = None,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: Optional[InquirerPySessionResult] = None,
+        session_result: InquirerPySessionResult | None = None,
     ) -> None:
         super().__init__(
             message=message,
@@ -175,9 +176,7 @@ class NumberPrompt(BaseComplexPrompt):
                     f"{type(self).__name__} argument 'default' should return type of float or Decimal"
                 )
         elif not isinstance(default, int):
-            raise InvalidArgument(
-                f"{type(self).__name__} argument 'default' should return type of int"
-            )
+            raise InvalidArgument(f"{type(self).__name__} argument 'default' should return type of int")
         self._default = default
 
         if keybindings is None:
@@ -269,9 +268,7 @@ class NumberPrompt(BaseComplexPrompt):
                     VSplit(
                         [
                             Window(
-                                height=LayoutDimension.exact(1)
-                                if not self._wrap_lines
-                                else None,
+                                height=LayoutDimension.exact(1) if not self._wrap_lines else None,
                                 content=FormattedTextControl(self._get_prompt_message),
                                 wrap_lines=self._wrap_lines,
                                 dont_extend_height=True,
@@ -280,21 +277,15 @@ class NumberPrompt(BaseComplexPrompt):
                             ConditionalContainer(self._whole_window, filter=~IsDone()),
                             ConditionalContainer(
                                 Window(
-                                    height=LayoutDimension.exact(1)
-                                    if not self._wrap_lines
-                                    else None,
-                                    content=FormattedTextControl(
-                                        [("", self._decimal_symbol)]
-                                    ),
+                                    height=LayoutDimension.exact(1) if not self._wrap_lines else None,
+                                    content=FormattedTextControl([("", self._decimal_symbol)]),
                                     wrap_lines=self._wrap_lines,
                                     dont_extend_height=True,
                                     dont_extend_width=True,
                                 ),
                                 filter=self._is_float & ~IsDone(),
                             ),
-                            ConditionalContainer(
-                                self._integral_window, filter=self._is_float & ~IsDone()
-                            ),
+                            ConditionalContainer(self._integral_window, filter=self._is_float & ~IsDone()),
                         ],
                         align=HorizontalAlign.LEFT,
                     ),
@@ -326,7 +317,7 @@ class NumberPrompt(BaseComplexPrompt):
             editing_mode=self._editing_mode,
         )
 
-    def _fix_sn(self, value: str) -> Tuple[str, str]:
+    def _fix_sn(self, value: str) -> tuple[str, str]:
         """Fix sciencetific notation format.
 
         Args:
@@ -351,9 +342,7 @@ class NumberPrompt(BaseComplexPrompt):
             if self._sn_pattern.match(str(self._default)) is None:
                 whole_buffer_text, integral_buffer_text = str(self._default).split(".")
             else:
-                whole_buffer_text, integral_buffer_text = self._fix_sn(
-                    str(self._default)
-                )
+                whole_buffer_text, integral_buffer_text = self._fix_sn(str(self._default))
             self._integral_buffer.text = integral_buffer_text
             self._whole_buffer.text = whole_buffer_text
         self._whole_buffer.cursor_position = len(self._whole_buffer.text)
@@ -391,18 +380,13 @@ class NumberPrompt(BaseComplexPrompt):
                 next_text_len = 1
             else:
                 if not increment:
-                    if (
-                        self.focus_buffer == self._integral_buffer
-                        and int(self.focus_buffer.text) == 0
-                    ):
+                    if self.focus_buffer == self._integral_buffer and int(self.focus_buffer.text) == 0:
                         return
                     next_text = leading_zeros + str(int(self.focus_buffer.text) - 1)
                 else:
                     next_text = leading_zeros + str(int(self.focus_buffer.text) + 1)
                 next_text_len = len(next_text)
-            desired_position = (
-                self.focus_buffer.cursor_position + next_text_len - current_text_len
-            )
+            desired_position = self.focus_buffer.cursor_position + next_text_len - current_text_len
             self.focus_buffer.cursor_position = desired_position
             self.focus_buffer.text = next_text
             if self.focus_buffer.cursor_position != desired_position:
@@ -425,10 +409,7 @@ class NumberPrompt(BaseComplexPrompt):
         if applicable.
         """
         self.buffer_replace = False
-        if (
-            self.focus == self._integral_window
-            and self.focus_buffer.cursor_position == 0
-        ):
+        if self.focus == self._integral_window and self.focus_buffer.cursor_position == 0:
             self.focus = self._whole_window
         else:
             self.focus_buffer.cursor_position -= 1
@@ -453,11 +434,7 @@ class NumberPrompt(BaseComplexPrompt):
         """Handle enter event and answer/close the prompt."""
         if not self._float and not self._whole_buffer.text:
             result = ""
-        elif (
-            self._float
-            and not self._whole_buffer.text
-            and not self._integral_buffer.text
-        ):
+        elif self._float and not self._whole_buffer.text and not self._integral_buffer.text:
             result = ""
         else:
             result = str(self.value)
@@ -476,7 +453,7 @@ class NumberPrompt(BaseComplexPrompt):
         """Focus the integral window if `float_allowed`."""
         self._handle_focus(_, self._integral_window)
 
-    def _handle_focus(self, _, window: Optional[Window] = None) -> None:
+    def _handle_focus(self, _, window: Window | None = None) -> None:
         """Focus either the integral window or whole window."""
         if not self._float:
             return
@@ -510,9 +487,7 @@ class NumberPrompt(BaseComplexPrompt):
             self._whole_buffer.text = "0"
             return
         if self._whole_buffer.text.startswith("-"):
-            move_cursor = self._whole_buffer.cursor_position < len(
-                self._whole_buffer.text
-            )
+            move_cursor = self._whole_buffer.cursor_position < len(self._whole_buffer.text)
             self._whole_buffer.text = self._whole_buffer.text[1:]
             if move_cursor:
                 self._whole_buffer.cursor_position -= 1
@@ -579,8 +554,8 @@ class NumberPrompt(BaseComplexPrompt):
         self._layout.focus(self._focus)
 
     @property
-    def value(self) -> Union[int, float, Decimal]:
-        """Union[int, float]: The actual value of the prompt, combining and transforming all input buffer values."""
+    def value(self) -> int | float | Decimal:
+        """Int | float: The actual value of the prompt, combining and transforming all input buffer values."""
         try:
             if not self._float:
                 return int(self._whole_buffer.text)
@@ -593,15 +568,11 @@ class NumberPrompt(BaseComplexPrompt):
             return self._default
 
     @value.setter
-    def value(self, value: Union[int, float, Decimal]) -> None:
+    def value(self, value: int | float | Decimal) -> None:
         if self._min is not None:
-            value = max(
-                value, self._min if not self._float else Decimal(str(self._min))
-            )
+            value = max(value, self._min if not self._float else Decimal(str(self._min)))
         if self._max is not None:
-            value = min(
-                value, self._max if not self._float else Decimal(str(self._max))
-            )
+            value = min(value, self._max if not self._float else Decimal(str(self._max)))
         if not self._float:
             self._whole_buffer.text = str(value)
         else:

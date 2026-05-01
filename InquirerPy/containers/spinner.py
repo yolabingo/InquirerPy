@@ -6,8 +6,9 @@ Note:
 
     Use library such as `yaspin <https://github.com/pavdmyt/yaspin>`_ if you need a plain spinner.
 """
+
 import asyncio
-from typing import TYPE_CHECKING, Callable, List, NamedTuple, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Callable, NamedTuple
 
 from prompt_toolkit.filters.utils import to_filter
 from prompt_toolkit.layout.containers import ConditionalContainer, Window
@@ -66,7 +67,7 @@ class SpinnerWindow(ConditionalContainer):
         self,
         loading: "Filter",
         redraw: Callable[[], None],
-        pattern: Optional[Union[List[str], SPINNERS]] = None,
+        pattern: list[str] | SPINNERS | None = None,
         delay: float = 0.1,
         text: str = "",
     ) -> None:
@@ -83,7 +84,7 @@ class SpinnerWindow(ConditionalContainer):
             filter=self._loading,
         )
 
-    def _get_text(self) -> List[Tuple[str, str]]:
+    def _get_text(self) -> list[tuple[str, str]]:
         """Dynamically get the text for the :class:`~prompt_toolkit.layout.Window`.
 
         Returns:

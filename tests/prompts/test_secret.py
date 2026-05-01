@@ -16,10 +16,11 @@ from tests.style import get_sample_style
 
 class TestSecret(unittest.TestCase):
     def setUp(self):
-        self.inp = create_pipe_input()
+        self._inp_cm = create_pipe_input()
+        self.inp = self._inp_cm.__enter__()
 
     def tearDown(self):
-        self.inp.close()
+        self._inp_cm.__exit__(None, None, None)
 
     def test_prompt_result(self):
         self.inp.send_text("what\n")

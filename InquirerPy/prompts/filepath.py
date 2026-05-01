@@ -1,7 +1,8 @@
 """Module contains the class to create filepath prompt and filepath completer class."""
+
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Generator, Optional
+from typing import TYPE_CHECKING, Any, Callable, Generator
 
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.completion.base import ThreadedCompleter
@@ -39,9 +40,7 @@ class FilePathCompleter(Completer):
         self._only_files = only_files
         self._delimiter = "/" if os.name == "posix" else "\\"
 
-    def get_completions(
-        self, document, complete_event
-    ) -> Generator[Completion, None, None]:
+    def get_completions(self, document, complete_event) -> Generator[Completion, None, None]:
         """Get a list of valid system paths."""
         if document.text == "~":
             return
@@ -53,9 +52,7 @@ class FilePathCompleter(Completer):
             validation = lambda file, doc_text: True
         elif document.text.startswith("~"):
             dirname = Path(os.path.dirname(f"{Path.home()}{document.text[1:]}"))
-            validation = lambda file, doc_text: str(file).startswith(
-                f"{Path.home()}{doc_text[1:]}"
-            )
+            validation = lambda file, doc_text: str(file).startswith(f"{Path.home()}{doc_text[1:]}")
         elif document.text.startswith(f".{self._delimiter}"):
             dirname = Path(os.path.dirname(document.text))
             validation = lambda file, doc_text: str(file).startswith(doc_text[2:])
@@ -65,9 +62,7 @@ class FilePathCompleter(Completer):
         for item in self._get_completion(document, dirname, validation):
             yield item
 
-    def _get_completion(
-        self, document, path, validation
-    ) -> Generator[Completion, None, None]:
+    def _get_completion(self, document, path, validation) -> Generator[Completion, None, None]:
         if not path.is_dir():
             return
         for file in path.iterdir():
@@ -139,7 +134,7 @@ class FilePathPrompt(InputPrompt):
     def __init__(
         self,
         message: InquirerPyMessage,
-        style: Optional[InquirerPyStyle] = None,
+        style: InquirerPyStyle | None = None,
         vi_mode: bool = False,
         default: InquirerPyDefault = "",
         qmark: str = "?",
@@ -147,20 +142,20 @@ class FilePathPrompt(InputPrompt):
         instruction: str = "",
         long_instruction: str = "",
         multicolumn_complete: bool = False,
-        validate: Optional[InquirerPyValidate] = None,
+        validate: InquirerPyValidate | None = None,
         invalid_message: str = "Invalid input",
         only_directories: bool = False,
         only_files: bool = False,
-        transformer: Optional[Callable[[str], Any]] = None,
-        filter: Optional[Callable[[str], Any]] = None,
-        keybindings: Optional[InquirerPyKeybindings] = None,
+        transformer: Callable[[str], Any] | None = None,
+        filter: Callable[[str], Any] | None = None,
+        keybindings: InquirerPyKeybindings | None = None,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: Optional[InquirerPySessionResult] = None,
-        input: Optional["Input"] = None,
-        output: Optional["Output"] = None,
+        session_result: InquirerPySessionResult | None = None,
+        input: "Input | None" = None,
+        output: "Output | None" = None,
     ) -> None:
         super().__init__(
             message=message,
@@ -171,11 +166,7 @@ class FilePathPrompt(InputPrompt):
             amark=amark,
             instruction=instruction,
             long_instruction=long_instruction,
-            completer=ThreadedCompleter(
-                FilePathCompleter(
-                    only_directories=only_directories, only_files=only_files
-                )
-            ),
+            completer=ThreadedCompleter(FilePathCompleter(only_directories=only_directories, only_files=only_files)),
             multicolumn_complete=multicolumn_complete,
             validate=validate,
             invalid_message=invalid_message,

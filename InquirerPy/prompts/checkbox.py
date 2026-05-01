@@ -1,5 +1,6 @@
 """Module contains the class to create a checkbox prompt."""
-from typing import Any, Callable, List, Optional, Tuple, Union
+
+from typing import Any, Callable
 
 from prompt_toolkit.validation import ValidationError
 
@@ -36,7 +37,7 @@ class InquirerPyCheckboxControl(InquirerPyUIListControl):
         pointer: str,
         enabled_symbol: str,
         disabled_symbol: str,
-        session_result: Optional[InquirerPySessionResult],
+        session_result: InquirerPySessionResult | None,
     ) -> None:
         """Initialise required attributes and call base class."""
         self._pointer = pointer
@@ -52,7 +53,7 @@ class InquirerPyCheckboxControl(InquirerPyUIListControl):
     def _format_choices(self) -> None:
         pass
 
-    def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
+    def _get_hover_text(self, choice) -> list[tuple[str, str]]:
         display_choices = []
         display_choices.append(("class:pointer", self._pointer))
         if self._pointer:
@@ -61,9 +62,7 @@ class InquirerPyCheckboxControl(InquirerPyUIListControl):
             display_choices.append(
                 (
                     "class:checkbox",
-                    self._enabled_symbol
-                    if choice["enabled"]
-                    else self._disabled_symbol,
+                    self._enabled_symbol if choice["enabled"] else self._disabled_symbol,
                 )
             )
             if self._enabled_symbol and self._disabled_symbol:
@@ -72,7 +71,7 @@ class InquirerPyCheckboxControl(InquirerPyUIListControl):
         display_choices.append(("class:pointer", choice["name"]))
         return display_choices
 
-    def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
+    def _get_normal_text(self, choice) -> list[tuple[str, str]]:
         display_choices = []
         display_choices.append(("", len(self._pointer) * " "))
         if self._pointer:
@@ -81,9 +80,7 @@ class InquirerPyCheckboxControl(InquirerPyUIListControl):
             display_choices.append(
                 (
                     "class:checkbox",
-                    self._enabled_symbol
-                    if choice["enabled"]
-                    else self._disabled_symbol,
+                    self._enabled_symbol if choice["enabled"] else self._disabled_symbol,
                 )
             )
             if self._enabled_symbol and self._disabled_symbol:
@@ -165,7 +162,7 @@ class CheckboxPrompt(ListPrompt):
         message: InquirerPyMessage,
         choices: InquirerPyListChoices,
         default: Any = None,
-        style: Optional[InquirerPyStyle] = None,
+        style: InquirerPyStyle | None = None,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
@@ -175,20 +172,20 @@ class CheckboxPrompt(ListPrompt):
         border: bool = False,
         instruction: str = "",
         long_instruction: str = "",
-        transformer: Optional[Callable[[Any], Any]] = None,
-        filter: Optional[Callable[[Any], Any]] = None,
-        height: Optional[Union[int, str]] = None,
-        max_height: Optional[Union[int, str]] = None,
-        validate: Optional[InquirerPyValidate] = None,
+        transformer: Callable[[Any], Any] | None = None,
+        filter: Callable[[Any], Any] | None = None,
+        height: int | str | None = None,
+        max_height: int | str | None = None,
+        validate: InquirerPyValidate | None = None,
         invalid_message: str = "Invalid input",
-        keybindings: Optional[InquirerPyKeybindings] = None,
+        keybindings: InquirerPyKeybindings | None = None,
         show_cursor: bool = True,
         cycle: bool = True,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: Optional[InquirerPySessionResult] = None,
+        session_result: InquirerPySessionResult | None = None,
     ) -> None:
         self.content_control = InquirerPyCheckboxControl(
             choices=choices,

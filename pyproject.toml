@@ -1,63 +1,79 @@
-[tool.poetry]
+[project]
 name = "InquirerPy"
-version = "0.3.4"
+version = "0.3.5"
 description = "Python port of Inquirer.js (A collection of common interactive command-line user interfaces)"
-authors = ["Kevin Zhuang <kevin7441@gmail.com>"]
-maintainers = ["Kevin Zhuang <kevin7441@gmail.com>"]
+authors = [
+  {name = "Kevin Zhuang", email = "kevin7441@gmail.com"},
+]
 readme = "README.md"
-repository = "https://github.com/kazhala/InquirerPy"
-documentation = "https://inquirerpy.readthedocs.io"
-license = "MIT"
-keywords=["cli", "prompt-toolkit", "commandline", "inquirer", "development"]
+license = {text = "MIT"}
+keywords = ["cli", "prompt-toolkit", "commandline", "inquirer", "development"]
 classifiers = [
-  "Development Status :: 2 - Pre-Alpha",
+  "Development Status :: 4 - Beta",
   "Environment :: Console",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: MIT License",
   "Operating System :: Unix",
   "Operating System :: Microsoft",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.7",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Software Development",
   "Topic :: Software Development :: User Interfaces",
   "Topic :: Software Development :: Libraries",
   "Topic :: Software Development :: Libraries :: Application Frameworks",
 ]
-packages = [
-  {include = "InquirerPy"}
+requires-python = ">=3.10"
+dependencies = [
+  "prompt-toolkit>=3.0.28",
 ]
-include = ["InquirerPy/py.typed"]
 
-[tool.poetry.dependencies]
-python = "^3.7"
-prompt-toolkit = "^3.0.1"
-pfzy = "^0.3.1"
-Sphinx = {version = "^4.1.2", optional = true}
-furo = {version = "^2021.8.17-beta.43", optional = true}
-sphinx-copybutton = {version = "^0.4.0", optional = true}
-sphinx-autobuild = {version = "^2021.3.14", optional = true}
-myst-parser = {version = "^0.15.1", optional = true}
+[project.urls]
+Repository = "https://github.com/yolabingo/InquirerPy"
+Documentation = "https://inquirerpy.readthedocs.io"
 
-[tool.poetry.dev-dependencies]
-pre-commit = "^2.11.1"
-isort = "^5.9.1"
-black = "^21.6b0"
-pydocstyle = "^6.1.1"
-coveralls = "^3.2.0"
+[project.optional-dependencies]
+docs = [
+  "Sphinx>=7.0",
+  "furo>=2024.1.29",
+  "sphinx-copybutton>=0.5",
+  "sphinx-autobuild>=2024.2.4",
+  "myst-parser>=3.0",
+]
+dev = [
+  "pre-commit>=3.5",
+  "ruff>=0.11",
+]
 
-[tool.poetry.extras]
-docs = ["Sphinx", "furo", "myst-parser", "sphinx-autobuild", "sphinx-copybutton"]
+[tool.hatch.build.targets.wheel]
+packages = ["InquirerPy"]
+artifacts = ["InquirerPy/py.typed"]
 
-[tool.isort]
-profile = "black"
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.pydocstyle]
-match = "^(?!(.*(init|main))).*\\.py"
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "D"]
+ignore = ["D107", "D100", "D104", "E501", "E731"]
+
+[tool.ruff.lint.pydocstyle]
 convention = "pep257"
-add-ignore = "D107"
-match_dir = "^(?!(example)).*"
+
+[tool.ruff.lint.isort]
+known-first-party = ["InquirerPy"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D"]
+"examples/**" = ["D"]
+"InquirerPy/_pfzy/**" = ["D"]
 
 [tool.coverage.run]
 source = ["InquirerPy"]
@@ -67,7 +83,3 @@ ignore_errors = true
 exclude_lines = [
     "if TYPE_CHECKING:"
 ]
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
