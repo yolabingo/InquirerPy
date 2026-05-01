@@ -988,3 +988,34 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(self.prompt.content_control._scorer, substr_scorer)
         self.prompt._toggle_exact(None, False)
         self.assertEqual(self.prompt.content_control._scorer, fzy_scorer)
+
+    def test_empty_filtered_choices_selection_property(self):
+        """selection property raises IndexError when no choices match filter (caller catches it)."""
+        self.prompt.content_control._filtered_choices = []
+        with self.assertRaises(IndexError):
+            _ = self.prompt.content_control.selection
+
+    def test_empty_filtered_choices_handle_down_no_crash(self):
+        """_handle_down returns True (cap hit) when no choices visible — no ZeroDivisionError."""
+        self.prompt.content_control._filtered_choices = []
+        result = self.prompt._handle_down(None)
+        self.assertTrue(result)
+
+    def test_empty_filtered_choices_handle_up_no_crash(self):
+        """_handle_up returns True (cap hit) when no choices visible — no ZeroDivisionError."""
+        self.prompt.content_control._filtered_choices = []
+        result = self.prompt._handle_up(None)
+        self.assertTrue(result)
+
+    def test_empty_filtered_choices_handle_toggle_choice_no_crash(self):
+        """_handle_toggle_choice is a no-op when no choices visible — no IndexError."""
+        self.prompt._multiselect = True
+        self.prompt.content_control._filtered_choices = []
+        self.prompt._handle_toggle_choice(None)  # must not raise
+
+    def test_empty_filtered_choices_handle_toggle_all_no_crash(self):
+        """_handle_toggle_all is already safe with empty choices (iterates empty list)."""
+        self.prompt._multiselect = True
+        self.prompt.content_control._filtered_choices = []
+        self.prompt._handle_toggle_all(None, True)  # must not raise
+        self.prompt._handle_toggle_all(None, False)  # must not raise

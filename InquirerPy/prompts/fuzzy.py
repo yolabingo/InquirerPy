@@ -626,6 +626,8 @@ class FuzzyPrompt(BaseListPrompt):
         """Handle tab event, alter the `selected` state of the choice."""
         if not self._multiselect:
             return
+        if self.content_control.choice_count == 0:
+            return
         current_selected_index = self.content_control.selection["index"]
         self.content_control.choices[current_selected_index][
             "enabled"
