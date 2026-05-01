@@ -1,7 +1,6 @@
 """Module contains pre-built validators."""
 import re
 from pathlib import Path
-from typing import Optional
 
 from prompt_toolkit.validation import ValidationError, Validator
 
@@ -130,7 +129,7 @@ class PasswordValidator(Validator):
     def __init__(
         self,
         message: str = "Input is not compliant with the password constraints",
-        length: Optional[int] = None,
+        length: int | None = None,
         cap: bool = False,
         special: bool = False,
         number: bool = False,

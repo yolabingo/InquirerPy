@@ -2,7 +2,7 @@
 
 A `PyInquirer <https://github.com/CITGuru/PyInquirer>`_ compatible entrypoint :func:`.prompt`.
 """
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.checkbox import CheckboxPrompt
@@ -38,7 +38,7 @@ question_mapping = {
 }
 
 
-def _get_questions(questions: InquirerPyQuestions) -> List[Dict[str, Any]]:
+def _get_questions(questions: InquirerPyQuestions) -> list[dict[str, Any]]:
     """Process and validate questions.
 
     Args:
@@ -57,8 +57,8 @@ def _get_questions(questions: InquirerPyQuestions) -> List[Dict[str, Any]]:
 
 
 def _get_question(
-    original_question: Dict[str, Any], result: InquirerPySessionResult, index: int
-) -> Tuple[Optional[Dict[str, Any]], str, Union[str, int], str]:
+    original_question: dict[str, Any], result: InquirerPySessionResult, index: int
+) -> tuple[dict[str, Any] | None, str, str | int, str]:
     """Get information from individual question.
 
     Args:
@@ -83,10 +83,10 @@ def _get_question(
 
 async def prompt_async(
     questions: InquirerPyQuestions,
-    style: Optional[Dict[str, str]] = None,
+    style: dict[str, str] | None = None,
     vi_mode: bool = False,
     raise_keyboard_interrupt: bool = True,
-    keybindings: Optional[InquirerPyKeybindings] = None,
+    keybindings: InquirerPyKeybindings | None = None,
     style_override: bool = True,
 ) -> InquirerPySessionResult:
     """Classic syntax entrypoint to create a prompt session via asynchronous method.
@@ -126,10 +126,10 @@ async def prompt_async(
 
 def prompt(
     questions: InquirerPyQuestions,
-    style: Optional[Dict[str, str]] = None,
+    style: dict[str, str] | None = None,
     vi_mode: bool = False,
     raise_keyboard_interrupt: bool = True,
-    keybindings: Optional[InquirerPyKeybindings] = None,
+    keybindings: InquirerPyKeybindings | None = None,
     style_override: bool = True,
 ) -> InquirerPySessionResult:
     """Classic syntax entrypoint to create a prompt session.

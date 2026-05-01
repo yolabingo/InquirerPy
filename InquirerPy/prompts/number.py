@@ -1,7 +1,7 @@
 """Module contains the class to create a number prompt."""
 import re
 from decimal import Decimal
-from typing import TYPE_CHECKING, Any, Callable, Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, cast
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
@@ -105,28 +105,28 @@ class NumberPrompt(BaseComplexPrompt):
     def __init__(
         self,
         message: InquirerPyMessage,
-        style: Optional[InquirerPyStyle] = None,
+        style: InquirerPyStyle | None = None,
         vi_mode: bool = False,
         default: InquirerPyDefault = 0,
         float_allowed: bool = False,
-        max_allowed: Optional[Union[int, float]] = None,
-        min_allowed: Optional[Union[int, float]] = None,
+        max_allowed: int | float | None = None,
+        min_allowed: int | float | None = None,
         decimal_symbol: str = ". ",
         replace_mode: bool = False,
         qmark: str = INQUIRERPY_QMARK_SEQUENCE,
         amark: str = "?",
         instruction: str = "",
         long_instruction: str = "",
-        validate: Optional[InquirerPyValidate] = None,
+        validate: InquirerPyValidate | None = None,
         invalid_message: str = "Invalid input",
-        transformer: Optional[Callable[[str], Any]] = None,
-        filter: Optional[Callable[[str], Any]] = None,
-        keybindings: Optional[InquirerPyKeybindings] = None,
+        transformer: Callable[[str], Any] | None = None,
+        filter: Callable[[str], Any] | None = None,
+        keybindings: InquirerPyKeybindings | None = None,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: Optional[InquirerPySessionResult] = None,
+        session_result: InquirerPySessionResult | None = None,
     ) -> None:
         super().__init__(
             message=message,
@@ -326,7 +326,7 @@ class NumberPrompt(BaseComplexPrompt):
             editing_mode=self._editing_mode,
         )
 
-    def _fix_sn(self, value: str) -> Tuple[str, str]:
+    def _fix_sn(self, value: str) -> tuple[str, str]:
         """Fix sciencetific notation format.
 
         Args:
@@ -476,7 +476,7 @@ class NumberPrompt(BaseComplexPrompt):
         """Focus the integral window if `float_allowed`."""
         self._handle_focus(_, self._integral_window)
 
-    def _handle_focus(self, _, window: Optional[Window] = None) -> None:
+    def _handle_focus(self, _, window: Window | None = None) -> None:
         """Focus either the integral window or whole window."""
         if not self._float:
             return
@@ -579,8 +579,8 @@ class NumberPrompt(BaseComplexPrompt):
         self._layout.focus(self._focus)
 
     @property
-    def value(self) -> Union[int, float, Decimal]:
-        """Union[int, float]: The actual value of the prompt, combining and transforming all input buffer values."""
+    def value(self) -> int | float | Decimal:
+        """int | float: The actual value of the prompt, combining and transforming all input buffer values."""
         try:
             if not self._float:
                 return int(self._whole_buffer.text)
@@ -593,7 +593,7 @@ class NumberPrompt(BaseComplexPrompt):
             return self._default
 
     @value.setter
-    def value(self, value: Union[int, float, Decimal]) -> None:
+    def value(self, value: int | float | Decimal) -> None:
         if self._min is not None:
             value = max(
                 value, self._min if not self._float else Decimal(str(self._min))

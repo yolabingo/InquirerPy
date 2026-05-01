@@ -1,6 +1,6 @@
 """Module contains the class to create a list prompt."""
 import shutil
-from typing import TYPE_CHECKING, Any, Callable, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.filters.cli import IsDone
@@ -53,7 +53,7 @@ class InquirerPyListControl(InquirerPyUIListControl):
         default: Any,
         pointer: str,
         marker: str,
-        session_result: Optional[InquirerPySessionResult],
+        session_result: InquirerPySessionResult | None,
         multiselect: bool,
         marker_pl: str,
     ) -> None:
@@ -67,7 +67,7 @@ class InquirerPyListControl(InquirerPyUIListControl):
             multiselect=multiselect,
         )
 
-    def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
+    def _get_hover_text(self, choice) -> list[tuple[str, str]]:
         display_choices = []
         display_choices.append(("class:pointer", self._pointer))
         display_choices.append(
@@ -80,7 +80,7 @@ class InquirerPyListControl(InquirerPyUIListControl):
         display_choices.append(("class:pointer", choice["name"]))
         return display_choices
 
-    def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
+    def _get_normal_text(self, choice) -> list[tuple[str, str]]:
         display_choices = []
         display_choices.append(("", len(self._pointer) * " "))
         display_choices.append(
@@ -166,31 +166,31 @@ class ListPrompt(BaseListPrompt):
         message: InquirerPyMessage,
         choices: InquirerPyListChoices,
         default: InquirerPyDefault = None,
-        style: Optional[InquirerPyStyle] = None,
+        style: InquirerPyStyle | None = None,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         instruction: str = "",
         long_instruction: str = "",
-        transformer: Optional[Callable[[Any], Any]] = None,
-        filter: Optional[Callable[[Any], Any]] = None,
-        height: Optional[Union[int, str]] = None,
-        max_height: Optional[Union[int, str]] = None,
+        transformer: Callable[[Any], Any] | None = None,
+        filter: Callable[[Any], Any] | None = None,
+        height: int | str | None = None,
+        max_height: int | str | None = None,
         multiselect: bool = False,
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
         marker_pl: str = " ",
         border: bool = False,
-        validate: Optional[InquirerPyValidate] = None,
+        validate: InquirerPyValidate | None = None,
         invalid_message: str = "Invalid input",
-        keybindings: Optional[InquirerPyKeybindings] = None,
+        keybindings: InquirerPyKeybindings | None = None,
         show_cursor: bool = True,
         cycle: bool = True,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: Optional[InquirerPySessionResult] = None,
+        session_result: InquirerPySessionResult | None = None,
     ) -> None:
         if not hasattr(self, "_content_control"):
             self.content_control = InquirerPyListControl(
@@ -281,7 +281,7 @@ class ListPrompt(BaseListPrompt):
             after_render=self._after_render,
         )
 
-    def _get_prompt_message_with_cursor(self) -> List[Tuple[str, str]]:
+    def _get_prompt_message_with_cursor(self) -> list[tuple[str, str]]:
         """Obtain the prompt message to display and display cursor behind the message.
 
         This ensures that cursor is always at the end of the window.
@@ -299,7 +299,7 @@ class ListPrompt(BaseListPrompt):
             "enabled"
         ]
 
-    def _handle_toggle_all(self, _, value: Optional[bool] = None) -> None:
+    def _handle_toggle_all(self, _, value: bool | None = None) -> None:
         """Toggle all choice `enabled` status.
 
         Args:

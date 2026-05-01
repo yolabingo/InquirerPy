@@ -1,6 +1,5 @@
 """Module contains :class:`.ValidationWindow` which can be used to display error."""
 
-from typing import Optional
 
 from prompt_toolkit.filters.base import FilterOrBool
 from prompt_toolkit.formatted_text.base import AnyFormattedText
@@ -43,10 +42,10 @@ class ValidationFloat(Float):
         self,
         invalid_message: AnyFormattedText,
         filter: FilterOrBool,
-        left: Optional[int] = None,
-        right: Optional[int] = None,
-        bottom: Optional[int] = None,
-        top: Optional[int] = None,
+        left: int | None = None,
+        right: int | None = None,
+        bottom: int | None = None,
+        top: int | None = None,
         **kwargs
     ) -> None:
         super().__init__(

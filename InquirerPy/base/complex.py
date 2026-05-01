@@ -1,7 +1,7 @@
 """Contains the interface class :class:`.BaseComplexPrompt` for more complex prompts and the mocked document class :class:`.FakeDocument`."""
 import shutil
 from dataclasses import dataclass
-from typing import Any, Callable, List, Optional, Tuple, Union
+from typing import Any, Callable
 
 from prompt_toolkit.application import Application
 from prompt_toolkit.enums import EditingMode
@@ -52,23 +52,23 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[InquirerPySessionResult], str]],
-        style: Optional[InquirerPyStyle] = None,
+        message: str | Callable[[InquirerPySessionResult], str],
+        style: InquirerPyStyle | None = None,
         border: bool = False,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
         long_instruction: str = "",
-        transformer: Optional[Callable[[Any], Any]] = None,
-        filter: Optional[Callable[[Any], Any]] = None,
-        validate: Optional[InquirerPyValidate] = None,
+        transformer: Callable[[Any], Any] | None = None,
+        filter: Callable[[Any], Any] | None = None,
+        validate: InquirerPyValidate | None = None,
         invalid_message: str = "Invalid input",
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: Optional[InquirerPySessionResult] = None,
+        session_result: InquirerPySessionResult | None = None,
     ) -> None:
         super().__init__(
             message=message,
@@ -116,7 +116,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._application.invalidate()
 
     def register_kb(
-        self, *keys: Union[Keys, str], filter: FilterOrBool = True
+        self, *keys: Keys | str, filter: FilterOrBool = True
     ) -> Callable[[KeyHandlerCallable], KeyHandlerCallable]:
         """Decorate keybinding registration function.
 
@@ -149,7 +149,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._status["skipped"] = True
         self._application.exit(exception=context["exception"])
 
-    def _after_render(self, app: Optional[Application]) -> None:
+    def _after_render(self, app: Application | None) -> None:
         """Run after the :class:`~prompt_toolkit.application.Application` is rendered/updated.
 
         Since this function is fired up on each render, adding a check on `self._rendered` to
@@ -173,7 +173,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._invalid_message = message
         self._invalid = True
 
-    def _get_error_message(self) -> List[Tuple[str, str]]:
+    def _get_error_message(self) -> list[tuple[str, str]]:
         """Obtain the error message dynamically.
 
         Returns:
@@ -186,11 +186,11 @@ class BaseComplexPrompt(BaseSimplePrompt):
             )
         ]
 
-    def _on_rendered(self, _: Optional[Application]) -> None:
+    def _on_rendered(self, _: Application | None) -> None:
         """Run once after the UI is rendered. Acts like `ComponentDidMount`."""
         pass
 
-    def _get_prompt_message(self) -> List[Tuple[str, str]]:
+    def _get_prompt_message(self) -> list[tuple[str, str]]:
         """Get the prompt message to display.
 
         Returns:

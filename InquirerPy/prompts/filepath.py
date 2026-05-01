@@ -1,7 +1,7 @@
 """Module contains the class to create filepath prompt and filepath completer class."""
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Generator, Optional
+from typing import TYPE_CHECKING, Any, Callable, Generator
 
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.completion.base import ThreadedCompleter
@@ -139,7 +139,7 @@ class FilePathPrompt(InputPrompt):
     def __init__(
         self,
         message: InquirerPyMessage,
-        style: Optional[InquirerPyStyle] = None,
+        style: InquirerPyStyle | None = None,
         vi_mode: bool = False,
         default: InquirerPyDefault = "",
         qmark: str = "?",
@@ -147,20 +147,20 @@ class FilePathPrompt(InputPrompt):
         instruction: str = "",
         long_instruction: str = "",
         multicolumn_complete: bool = False,
-        validate: Optional[InquirerPyValidate] = None,
+        validate: InquirerPyValidate | None = None,
         invalid_message: str = "Invalid input",
         only_directories: bool = False,
         only_files: bool = False,
-        transformer: Optional[Callable[[str], Any]] = None,
-        filter: Optional[Callable[[str], Any]] = None,
-        keybindings: Optional[InquirerPyKeybindings] = None,
+        transformer: Callable[[str], Any] | None = None,
+        filter: Callable[[str], Any] | None = None,
+        keybindings: InquirerPyKeybindings | None = None,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: Optional[InquirerPySessionResult] = None,
-        input: Optional["Input"] = None,
-        output: Optional["Output"] = None,
+        session_result: InquirerPySessionResult | None = None,
+        input: "Input | None" = None,
+        output: "Output | None" = None,
     ) -> None:
         super().__init__(
             message=message,

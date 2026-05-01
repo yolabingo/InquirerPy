@@ -1,5 +1,5 @@
 """Module contains the class to create an input prompt."""
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable
 
 from prompt_toolkit.buffer import ValidationState
 from prompt_toolkit.completion import NestedCompleter
@@ -85,29 +85,29 @@ class InputPrompt(BaseSimplePrompt):
     def __init__(
         self,
         message: InquirerPyMessage,
-        style: Optional[InquirerPyStyle] = None,
+        style: InquirerPyStyle | None = None,
         vi_mode: bool = False,
         default: InquirerPyDefault = "",
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
         long_instruction: str = "",
-        completer: Optional[Union[Dict[str, Optional[str]], "Completer"]] = None,
+        completer: dict[str, str | None] | "Completer | None" = None,
         multicolumn_complete: bool = False,
         multiline: bool = False,
-        validate: Optional[InquirerPyValidate] = None,
+        validate: InquirerPyValidate | None = None,
         invalid_message: str = "Invalid input",
-        transformer: Optional[Callable[[str], Any]] = None,
-        filter: Optional[Callable[[str], Any]] = None,
-        keybindings: Optional[InquirerPyKeybindings] = None,
+        transformer: Callable[[str], Any] | None = None,
+        filter: Callable[[str], Any] | None = None,
+        keybindings: InquirerPyKeybindings | None = None,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         is_password: bool = False,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: Optional[InquirerPySessionResult] = None,
-        input: Optional["Input"] = None,
-        output: Optional["Output"] = None,
+        session_result: InquirerPySessionResult | None = None,
+        input: "Input | None" = None,
+        output: "Output | None" = None,
     ) -> None:
         super().__init__(
             message,
@@ -206,9 +206,9 @@ class InputPrompt(BaseSimplePrompt):
 
     def _get_prompt_message(
         self,
-        pre_answer: Optional[Tuple[str, str]] = None,
-        post_answer: Optional[Tuple[str, str]] = None,
-    ) -> List[Tuple[str, str]]:
+        pre_answer: tuple[str, str] | None = None,
+        post_answer: tuple[str, str] | None = None,
+    ) -> list[tuple[str, str]]:
         """Get message to display infront of the input buffer.
 
         Args:

@@ -5,11 +5,6 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    Dict,
-    List,
-    Optional,
-    Tuple,
-    Union,
     cast,
 )
 
@@ -74,7 +69,7 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
         marker: str,
         current_text: Callable[[], str],
         max_lines: int,
-        session_result: Optional[InquirerPySessionResult],
+        session_result: InquirerPySessionResult | None,
         multiselect: bool,
         marker_pl: str,
         match_exact: bool,
@@ -105,7 +100,7 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
         self._last_line = min(self._max_lines, self.choice_count)
         self._height = self._last_line - self._first_line
 
-    def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
+    def _get_hover_text(self, choice) -> list[tuple[str, str]]:
         """Get the current highlighted line of text.
 
         If in the middle of filtering, loop through the char and color
@@ -136,7 +131,7 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
                     display_choices.append(("class:pointer", char))
         return display_choices
 
-    def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
+    def _get_normal_text(self, choice) -> list[tuple[str, str]]:
         """Get the line of text in `FormattedText`.
 
         If in the middle of filtering, loop through the char and color
@@ -168,7 +163,7 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
                     display_choices.append(("", char))
         return display_choices
 
-    def _get_formatted_choices(self) -> List[Tuple[str, str]]:
+    def _get_formatted_choices(self) -> list[tuple[str, str]]:
         """Get all available choices in formatted text format.
 
         Overriding this method because `self.choice` will be the
@@ -216,7 +211,7 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
             display_choices.pop()
         return display_choices
 
-    async def _filter_choices(self, wait_time: float) -> List[Dict[str, Any]]:
+    async def _filter_choices(self, wait_time: float) -> list[dict[str, Any]]:
         """Call to filter choices using fzy fuzzy match.
 
         Args:
@@ -240,7 +235,7 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
         return choices
 
     @property
-    def selection(self) -> Dict[str, Any]:
+    def selection(self) -> dict[str, Any]:
         """Override this value since `self.choice` does not indicate the choice displayed.
 
         `self.filtered_choice` is the up to date choice displayed.
@@ -334,12 +329,12 @@ class FuzzyPrompt(BaseListPrompt):
         choices: InquirerPyListChoices,
         default: InquirerPyDefault = "",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
-        style: Optional[InquirerPyStyle] = None,
+        style: InquirerPyStyle | None = None,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
-        transformer: Optional[Callable[[Any], Any]] = None,
-        filter: Optional[Callable[[Any], Any]] = None,
+        transformer: Callable[[Any], Any] | None = None,
+        filter: Callable[[Any], Any] | None = None,
         instruction: str = "",
         long_instruction: str = "",
         multiselect: bool = False,
@@ -350,17 +345,17 @@ class FuzzyPrompt(BaseListPrompt):
         info: bool = True,
         match_exact: bool = False,
         exact_symbol: str = " E",
-        height: Optional[Union[str, int]] = None,
-        max_height: Optional[Union[str, int]] = None,
-        validate: Optional[InquirerPyValidate] = None,
+        height: str | int | None = None,
+        max_height: str | int | None = None,
+        validate: InquirerPyValidate | None = None,
         invalid_message: str = "Invalid input",
-        keybindings: Optional[InquirerPyKeybindings] = None,
+        keybindings: InquirerPyKeybindings | None = None,
         cycle: bool = True,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: Optional[InquirerPySessionResult] = None,
+        session_result: InquirerPySessionResult | None = None,
     ) -> None:
         if not keybindings:
             keybindings = {}
@@ -495,7 +490,7 @@ class FuzzyPrompt(BaseListPrompt):
             after_render=self._after_render,
         )
 
-    def _toggle_exact(self, _, value: Optional[bool] = None) -> None:
+    def _toggle_exact(self, _, value: bool | None = None) -> None:
         """Toggle matching algorithm.
 
         Switch between fzy fuzzy match or sub-string exact match.
@@ -523,7 +518,7 @@ class FuzzyPrompt(BaseListPrompt):
             self._buffer.text = default_text
             self._buffer.cursor_position = len(default_text)
 
-    def _handle_toggle_all(self, _, value: Optional[bool] = None) -> None:
+    def _handle_toggle_all(self, _, value: bool | None = None) -> None:
         """Toggle all choice `enabled` status.
 
         Args:
@@ -537,7 +532,7 @@ class FuzzyPrompt(BaseListPrompt):
                 continue
             raw_choice["enabled"] = value if value else not raw_choice["enabled"]
 
-    def _generate_after_input(self) -> List[Tuple[str, str]]:
+    def _generate_after_input(self) -> list[tuple[str, str]]:
         """Virtual text displayed after the user input."""
         display_message = []
         if self._info:
@@ -556,7 +551,7 @@ class FuzzyPrompt(BaseListPrompt):
                 display_message.append(("class:fuzzy_info", self._exact_symbol))
         return display_message
 
-    def _generate_before_input(self) -> List[Tuple[str, str]]:
+    def _generate_before_input(self) -> list[tuple[str, str]]:
         """Display prompt symbol as virtual text before user input."""
         display_message = []
         display_message.append(("class:fuzzy_prompt", "%s " % self._prompt))

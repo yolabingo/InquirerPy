@@ -1,6 +1,6 @@
 """Module contains the class to create an expand prompt."""
 from dataclasses import dataclass
-from typing import Any, Callable, List, Optional, Tuple, Union
+from typing import Any, Callable
 
 from InquirerPy.base import BaseListPrompt, InquirerPyUIListControl
 from InquirerPy.base.control import Choice
@@ -51,7 +51,7 @@ class ExpandChoice(Choice):
             If this value is missing, the first char of the `str(value)` will be used as the key.
     """
 
-    key: Optional[str] = None
+    key: str | None = None
 
     def __post_init__(self):
         """Assign stringify value to name and also create key using the first char of the value if not present."""
@@ -75,7 +75,7 @@ class InquirerPyExpandControl(InquirerPyUIListControl):
         expand_help: ExpandHelp,
         expand_pointer: str,
         marker: str,
-        session_result: Optional[InquirerPySessionResult],
+        session_result: InquirerPySessionResult | None,
         multiselect: bool,
         marker_pl: str,
     ) -> None:
@@ -143,7 +143,7 @@ class InquirerPyExpandControl(InquirerPyUIListControl):
                     self.selected_choice_index = index
                     break
 
-    def _get_formatted_choices(self) -> List[Tuple[str, str]]:
+    def _get_formatted_choices(self) -> list[tuple[str, str]]:
         """Override this parent class method as expand require visual switch of content.
 
         Two types of mode:
@@ -160,7 +160,7 @@ class InquirerPyExpandControl(InquirerPyUIListControl):
             )
         return display_choices
 
-    def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
+    def _get_hover_text(self, choice) -> list[tuple[str, str]]:
         display_choices = []
         display_choices.append(("class:pointer", self._pointer))
         display_choices.append(
@@ -177,7 +177,7 @@ class InquirerPyExpandControl(InquirerPyUIListControl):
         display_choices.append(("class:pointer", choice["name"]))
         return display_choices
 
-    def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
+    def _get_normal_text(self, choice) -> list[tuple[str, str]]:
         display_choices = []
         display_choices.append(("", len(self._pointer) * " "))
         display_choices.append(
@@ -274,35 +274,35 @@ class ExpandPrompt(ListPrompt):
         message: InquirerPyMessage,
         choices: InquirerPyListChoices,
         default: InquirerPyDefault = "",
-        style: Optional[InquirerPyStyle] = None,
+        style: InquirerPyStyle | None = None,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
         pointer: str = " ",
         separator: str = ") ",
         help_msg: str = "Help, list all choices",
-        expand_help: Optional[ExpandHelp] = None,
+        expand_help: ExpandHelp | None = None,
         expand_pointer: str = "%s " % INQUIRERPY_POINTER_SEQUENCE,
         instruction: str = "",
         long_instruction: str = "",
-        transformer: Optional[Callable[[Any], Any]] = None,
-        filter: Optional[Callable[[Any], Any]] = None,
-        height: Optional[Union[int, str]] = None,
-        max_height: Optional[Union[int, str]] = None,
+        transformer: Callable[[Any], Any] | None = None,
+        filter: Callable[[Any], Any] | None = None,
+        height: int | str | None = None,
+        max_height: int | str | None = None,
         multiselect: bool = False,
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
         marker_pl: str = " ",
         border: bool = False,
-        validate: Optional[InquirerPyValidate] = None,
+        validate: InquirerPyValidate | None = None,
         invalid_message: str = "Invalid input",
-        keybindings: Optional[InquirerPyKeybindings] = None,
+        keybindings: InquirerPyKeybindings | None = None,
         show_cursor: bool = True,
         cycle: bool = True,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: Optional[InquirerPySessionResult] = None,
+        session_result: InquirerPySessionResult | None = None,
     ) -> None:
         if expand_help is None:
             expand_help = ExpandHelp(message=help_msg)
@@ -425,7 +425,7 @@ class ExpandPrompt(ListPrompt):
             else self._instruction
         )
 
-    def _get_prompt_message(self) -> List[Tuple[str, str]]:
+    def _get_prompt_message(self) -> list[tuple[str, str]]:
         """Return the formatted text to display in the prompt.
 
         Overriding this method to allow multiple formatted class to be displayed.
@@ -437,7 +437,7 @@ class ExpandPrompt(ListPrompt):
             )
         return display_message
 
-    def _handle_toggle_all(self, _, value: Optional[bool] = None) -> None:
+    def _handle_toggle_all(self, _, value: bool | None = None) -> None:
         """Override this method to ignore `ExpandHelp`.
 
         :param value: Specify a value to toggle.

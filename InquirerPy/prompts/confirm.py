@@ -1,5 +1,5 @@
 """Module contains the class to create a confirm prompt."""
-from typing import TYPE_CHECKING, Any, Callable, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Callable
 
 from prompt_toolkit.buffer import ValidationState
 from prompt_toolkit.keys import Keys
@@ -73,25 +73,25 @@ class ConfirmPrompt(BaseSimplePrompt):
     def __init__(
         self,
         message: InquirerPyMessage,
-        style: Optional[InquirerPyStyle] = None,
+        style: InquirerPyStyle | None = None,
         default: InquirerPyDefault = False,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
         long_instruction: str = "",
-        transformer: Optional[Callable[[bool], Any]] = None,
-        filter: Optional[Callable[[bool], Any]] = None,
-        keybindings: Optional[InquirerPyKeybindings] = None,
+        transformer: Callable[[bool], Any] | None = None,
+        filter: Callable[[bool], Any] | None = None,
+        keybindings: InquirerPyKeybindings | None = None,
         wrap_lines: bool = True,
         confirm_letter: str = "y",
         reject_letter: str = "n",
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: Optional[InquirerPySessionResult] = None,
-        input: Optional["Input"] = None,
-        output: Optional["Output"] = None,
+        session_result: InquirerPySessionResult | None = None,
+        input: "Input | None" = None,
+        output: "Output | None" = None,
     ) -> None:
         vi_mode = False
         super().__init__(
@@ -171,7 +171,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         self.status["result"] = self._default
         event.app.exit(result=self._default)
 
-    def _get_prompt_message(self) -> List[Tuple[str, str]]:
+    def _get_prompt_message(self) -> list[tuple[str, str]]:
         """Get message to display infront of the input buffer.
 
         Returns:

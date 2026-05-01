@@ -6,11 +6,7 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    Dict,
-    List,
     NamedTuple,
-    Optional,
-    Tuple,
     Union,
 )
 
@@ -51,26 +47,26 @@ class InquirerPyStyle(NamedTuple):
         purposes. Obtain an instance of this class using :func:`.get_style`.
     """
 
-    dict: Dict[str, str]
+    dict: dict[str, str]
 
 
-InquirerPySessionResult = Dict[Union[str, int], Optional[Union[str, bool, List[Any]]]]
-InquirerPyChoice = Union[List[Any], List["Choice"], List[Dict[str, Any]]]
+InquirerPySessionResult = dict[str | int, str | bool | list[Any] | None]
+InquirerPyChoice = Union[list[Any], list["Choice"], list[dict[str, Any]]]
 InquirerPyListChoices = Union[
     Callable[["InquirerPySessionResult"], InquirerPyChoice],
     InquirerPyChoice,
 ]
 InquirerPyValidate = Union[Callable[[Any], bool], "Validator"]
-InquirerPyQuestions = Union[List[Dict[str, Any]], Dict[str, Any]]
-InquirerPyMessage = Union[str, Callable[["InquirerPySessionResult"], str]]
-InquirerPyDefault = Union[Any, Callable[["InquirerPySessionResult"], Any]]
-InquirerPyKeybindings = Dict[
-    str, List[Dict[str, Union[str, "FilterOrBool", List[str]]]]
+InquirerPyQuestions = list[dict[str, Any]] | dict[str, Any]
+InquirerPyMessage = str | Callable[["InquirerPySessionResult"], str]
+InquirerPyDefault = Any | Callable[["InquirerPySessionResult"], Any]
+InquirerPyKeybindings = dict[
+    str, list[dict[str, Union[str, "FilterOrBool", list[str]]]]
 ]
 
 
 def get_style(
-    style: Optional[Dict[str, str]] = None, style_override: bool = True
+    style: dict[str, str] | None = None, style_override: bool = True
 ) -> InquirerPyStyle:
     """Obtain an :class:`.InquirerPyStyle` instance which can be consumed by the `style` parameter in prompts.
 
@@ -162,10 +158,10 @@ def get_style(
 
 
 def calculate_height(
-    height: Optional[Union[int, str]],
-    max_height: Optional[Union[int, str]],
+    height: int | str | None,
+    max_height: int | str | None,
     height_offset: int = 2,
-) -> Tuple[Optional[int], int]:
+) -> tuple[int | None, int]:
     """Calculate the `height` and `max_height` for the main question contents.
 
     Tip:
@@ -262,7 +258,7 @@ def patched_print(*values) -> None:
 
 
 def color_print(
-    formatted_text: List[Tuple[str, str]], style: Optional[Dict[str, str]] = None
+    formatted_text: list[tuple[str, str]], style: dict[str, str] | None = None
 ) -> None:
     """Print colored text leveraging :func:`~prompt_toolkit.shortcuts.print_formatted_text`.
 
